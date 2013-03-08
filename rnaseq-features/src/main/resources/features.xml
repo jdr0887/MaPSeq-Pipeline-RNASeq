@@ -1,0 +1,14 @@
+<features name="mapseq-pipeline-rnaseq-${project.version}">
+
+  <feature name="mapseq-pipeline-rnaseq" version="${project.version}" resolver="(obr)">
+    <bundle>mvn:edu.unc.mapseq.pipelines.rnaseq/workflow/${project.version}</bundle>
+    <bundle>mvn:edu.unc.mapseq.pipelines.rnaseq/commands/${project.version}</bundle>
+    <bundle start-level="100">mvn:edu.unc.mapseq.pipelines.rnaseq/messaging/${project.version}</bundle>
+  </feature>
+
+</features>
+
+
+
+
+
