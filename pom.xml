@@ -425,9 +425,9 @@
     </plugins>
   </build>
   <modules>
+    <module>rnaseq-workflow</module>
     <module>rnaseq-commands</module>
     <module>rnaseq-features</module>
     <module>rnaseq-messaging</module>
-    <module>rnaseq-workflow</module>
   </modules>
 </project>
