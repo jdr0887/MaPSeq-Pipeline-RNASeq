@@ -193,57 +193,57 @@
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-dao</groupId>
       	<artifactId>mapseq-dao-api</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-dao</groupId>
       	<artifactId>mapseq-dao-jpa</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-core</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-alignment</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-mapsplice</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-ubu</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-qc</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-filter</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-picard</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.mapseq-modules</groupId>
       	<artifactId>mapseq-module-samtools</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq</groupId>
       	<artifactId>mapseq-pipeline-api</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.pipelines.rnaseq</groupId>
@@ -253,7 +253,7 @@
       <dependency>
 	<groupId>edu.unc.mapseq.mapseq-messaging</groupId>
 	<artifactId>mapseq-messaging-common</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>junit</groupId>
