@@ -58,7 +58,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
 
     @Override
     public String getName() {
-        return RNASeqPipeline.class.getSimpleName().replace("Pipeline", "").toUpperCase();
+        return RNASeqPipeline.class.getSimpleName().replace("Pipeline", "");
     }
 
     @Override
