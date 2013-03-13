@@ -62,4 +62,9 @@
 
   <service ref="rnaSeqPipelineBeanService" interface="edu.unc.mapseq.pipeline.PipelineBeanService" />
 
+  <bean id="rnaSeqPipelineExecutorService" class="edu.unc.mapseq.pipeline.rnaseq.RNASeqPipelineExecutorService"
+    init-method="start" destroy-method="stop" activation="eager">
+    <property name="pipelineBeanService" ref="rnaSeqPipelineBeanService" />
+  </bean>
+
 </blueprint>
