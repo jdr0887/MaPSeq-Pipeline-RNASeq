@@ -16,8 +16,8 @@ public class RNASeqPipelineExecutorService {
     public void start() throws Exception {
         logger.info("ENTERING stop()");
 
-        long delay = 15 * 1000; // 15 seconds
-        long period = 5 * 60 * 1000; // 5 minutes
+        long delay = 1 * 60 * 1000; 
+        long period = 5 * 60 * 1000; 
 
         RNASeqPipelineExecutorTask task = new RNASeqPipelineExecutorTask();
         task.setPipelineBeanService(pipelineBeanService);
