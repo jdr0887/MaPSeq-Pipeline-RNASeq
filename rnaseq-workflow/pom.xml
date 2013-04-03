@@ -16,32 +16,8 @@
       <artifactId>mapseq-pipeline-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-alignment</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-mapsplice</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-ubu</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-qc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-picard</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-samtools</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.unc.mapseq.mapseq-modules</groupId>
-      <artifactId>mapseq-module-filter</artifactId>
+      <groupId>edu.unc.mapseq</groupId>
+      <artifactId>mapseq-modules</artifactId>
     </dependency>
   </dependencies>
   <build>
