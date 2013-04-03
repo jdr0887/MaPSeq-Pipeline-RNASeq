@@ -94,9 +94,10 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
         }
 
         if (getWorkflowPlan().getHTSFSamples() != null) {
-            logger.info("htsfSampleSet.size(): {}", htsfSampleSet.size());
             htsfSampleSet.addAll(getWorkflowPlan().getHTSFSamples());
         }
+
+	logger.info("htsfSampleSet.size(): {}", htsfSampleSet.size());
 
         for (HTSFSample htsfSample : htsfSampleSet) {
 
