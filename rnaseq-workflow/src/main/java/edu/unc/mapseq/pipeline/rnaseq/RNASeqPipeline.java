@@ -23,17 +23,16 @@ import edu.unc.mapseq.module.core.MoveCLI;
 import edu.unc.mapseq.module.core.RemoveCLI;
 import edu.unc.mapseq.module.filter.PruneISOFormsFromGeneQuantFileCLI;
 import edu.unc.mapseq.module.filter.StripTrailingTabsCLI;
+import edu.unc.mapseq.module.mapsplice.MapSplice2CLI;
 import edu.unc.mapseq.module.mapsplice.MapSpliceCLI;
 import edu.unc.mapseq.module.mapsplice.RSEMCalculateExpressionCLI;
 import edu.unc.mapseq.module.picard.PicardAddOrReplaceReadGroupsCLI;
 import edu.unc.mapseq.module.picard.PicardSortOrderType;
-import edu.unc.mapseq.module.qc.ExonQuantificationCLI;
 import edu.unc.mapseq.module.qc.NormalizeQuartileCLI;
-import edu.unc.mapseq.module.samtools.DetermineMedianCLI;
-import edu.unc.mapseq.module.samtools.DetermineNumberOfReadsCLI;
+import edu.unc.mapseq.module.qc.NormBedExonQuantCLI;
+import edu.unc.mapseq.module.bedtools.CoverageBedCLI;
 import edu.unc.mapseq.module.samtools.SAMToolsFlagstatCLI;
 import edu.unc.mapseq.module.samtools.SAMToolsIndexCLI;
-import edu.unc.mapseq.module.samtools.SAMToolsPileupCLI;
 import edu.unc.mapseq.module.samtools.SAMToolsSortCLI;
 import edu.unc.mapseq.module.samtools.SortByReferenceAndNameCLI;
 import edu.unc.mapseq.module.ubu.UBUFastqFormatterCLI;
@@ -48,6 +47,8 @@ import edu.unc.mapseq.pipeline.PipelineUtil;
 public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> {
 
     private final Logger logger = LoggerFactory.getLogger(RNASeqPipeline.class);
+    
+    private final String tcga_comp_exon = "/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.bed";
 
     private RNASeqPipelineBeanService pipelineBeanService;
 
@@ -185,7 +186,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     graph.addEdge(fastqFormatterR2Job, removeR2Job);
 
                     // new job
-                    CondorJob mapspliceJob = PipelineJobFactory.createJob(++count, MapSpliceCLI.class,
+                    CondorJob mapspliceJob = PipelineJobFactory.createJob(++count, MapSplice2CLI.class,
                             getWorkflowPlan(), htsfSample);
                     mapspliceJob.addArgument(MapSpliceCLI.BAM);
                     mapspliceJob.addArgument(MapSpliceCLI.FUSIONNONCANONICAL);
@@ -273,18 +274,6 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     graph.addEdge(samtoolsIndexJob, samtoolsFlagstatJob);
 
                     // new job
-                    CondorJob determineNumReadsJob = PipelineJobFactory.createJob(++count,
-                            DetermineNumberOfReadsCLI.class, getWorkflowPlan(), htsfSample);
-                    determineNumReadsJob.addArgument(DetermineNumberOfReadsCLI.FLAGSTATINPUT,
-                            samtoolsFlagstatOut.getAbsolutePath());
-                    File determineNumReadsOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
-                            ".numReads.txt"));
-                    determineNumReadsJob.addArgument(DetermineNumberOfReadsCLI.OUTPUT,
-                            determineNumReadsOut.getAbsolutePath());
-                    graph.addVertex(determineNumReadsJob);
-                    graph.addEdge(samtoolsFlagstatJob, determineNumReadsJob);
-
-                    // new job
                     CondorJob ubuSamJunctionJob = PipelineJobFactory.createJob(++count, UBUSamJunctionCLI.class,
                             getWorkflowPlan(), htsfSample);
                     ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.JUNCTIONS, this.pipelineBeanService.getJunctions());
@@ -296,45 +285,28 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     graph.addEdge(samtoolsIndexJob, ubuSamJunctionJob);
 
                     // new job
-                    CondorJob determineMedianJob = PipelineJobFactory.createJob(++count, DetermineMedianCLI.class,
+                    CondorJob coverageBedJob = PipelineJobFactory.createJob(++count, CoverageBedCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    determineMedianJob.addArgument(DetermineMedianCLI.INPUT, samtoolsSortOut.getAbsolutePath());
-                    File determineMedianOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
-                            ".median.txt"));
-                    determineMedianJob.addArgument(DetermineMedianCLI.OUTPUT, determineMedianOut.getAbsolutePath());
-                    graph.addVertex(determineMedianJob);
-                    graph.addEdge(samtoolsSortJob, determineMedianJob);
+                    coverageBedJob.addArgument(CoverageBedCLI.INPUT, samtoolsSortOut.getAbsolutePath());
+                    coverageBedJob.addArgument(CoverageBedCLI.BED, tcga_comp_exon);
+                    coverageBedJob.addArgument(CoverageBedCLI.SPLITBED);
+                    File coverageBedOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
+                            ".coverageBedOut.txt"));
+                    coverageBedJob.addArgument(CoverageBedCLI.OUTPUT, coverageBedOut.getAbsolutePath());
+                    graph.addVertex(coverageBedJob);
+                    graph.addEdge(samtoolsSortJob, coverageBedJob);
 
                     // new job
-                    CondorJob samtoolsPileupJob = PipelineJobFactory.createJob(++count, SAMToolsPileupCLI.class,
+                    CondorJob normBedExonQuantJob = PipelineJobFactory.createJob(++count, NormBedExonQuantCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    samtoolsPileupJob.addArgument(SAMToolsPileupCLI.INPUT, samtoolsSortOut.getAbsolutePath());
-                    File samtoolsPileupOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
-                            ".pileup"));
-                    samtoolsPileupJob.addArgument(SAMToolsPileupCLI.OUTPUT, samtoolsPileupOut.getAbsolutePath());
-                    graph.addVertex(samtoolsPileupJob);
-                    graph.addEdge(samtoolsIndexJob, samtoolsPileupJob);
-
-                    // new job
-                    CondorJob exonQuantificationJob = PipelineJobFactory.createJob(++count,
-                            ExonQuantificationCLI.class, getWorkflowPlan(), htsfSample);
-                    exonQuantificationJob.addArgument(ExonQuantificationCLI.COMPOSITEEXONS,
-                            this.pipelineBeanService.getCompositeExons());
-                    exonQuantificationJob.addArgument(ExonQuantificationCLI.NUMBEROFREADS,
-                            determineNumReadsOut.getAbsolutePath());
-                    exonQuantificationJob
-                            .addArgument(ExonQuantificationCLI.PILEUP, samtoolsPileupOut.getAbsolutePath());
-                    exonQuantificationJob.addArgument(ExonQuantificationCLI.MEDIAN,
-                            determineMedianOut.getAbsolutePath());
-                    File exonQuantificationOut = new File(outputDirectory, samtoolsPileupOut.getName().replace(
-                            ".pileup", ".exon_quantification.txt"));
-                    exonQuantificationJob.addArgument(ExonQuantificationCLI.OUTPUT,
-                            exonQuantificationOut.getAbsolutePath());
-                    graph.addVertex(exonQuantificationJob);
-                    graph.addEdge(samtoolsPileupJob, exonQuantificationJob);
-                    graph.addEdge(determineNumReadsJob, exonQuantificationJob);
-                    graph.addEdge(determineMedianJob, exonQuantificationJob);
-
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath());
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, tcga_comp_exon);
+                    File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(".coverageBedOut.txt",
+                            ".normBedExonQuantOut.txt"));
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.OUTFILE, normBedExonQuantOut.getAbsolutePath());
+                    graph.addVertex(normBedExonQuantJob);
+                    graph.addEdge(coverageBedJob,normBedExonQuantJob);
+                    
                     // new job
                     CondorJob sortBAMByReferenceAndNameJob = PipelineJobFactory.createJob(++count,
                             SortByReferenceAndNameCLI.class, getWorkflowPlan(), htsfSample);
