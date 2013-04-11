@@ -11,18 +11,18 @@ public class RNASeqPipelineExecutorService {
 
     private final Timer mainTimer = new Timer();
 
-    private RNASeqPipelineBeanService pipelineBeanService;
+    private RNASeqPipelineExecutorTask task;
+
+    private Long period = Long.valueOf(5 * 60 * 1000);
+
+    public RNASeqPipelineExecutorService() {
+        super();
+    }
 
     public void start() throws Exception {
-        logger.info("ENTERING stop()");
-
+        logger.info("ENTERING start()");
         long delay = 1 * 60 * 1000;
-        long period = 5 * 60 * 1000;
-
-        RNASeqPipelineExecutorTask task = new RNASeqPipelineExecutorTask();
-        task.setPipelineBeanService(pipelineBeanService);
         mainTimer.scheduleAtFixedRate(task, delay, period);
-
     }
 
     public void stop() throws Exception {
@@ -31,12 +31,20 @@ public class RNASeqPipelineExecutorService {
         mainTimer.cancel();
     }
 
-    public RNASeqPipelineBeanService getPipelineBeanService() {
-        return pipelineBeanService;
+    public RNASeqPipelineExecutorTask getTask() {
+        return task;
     }
 
-    public void setPipelineBeanService(RNASeqPipelineBeanService pipelineBeanService) {
-        this.pipelineBeanService = pipelineBeanService;
+    public void setTask(RNASeqPipelineExecutorTask task) {
+        this.task = task;
+    }
+
+    public Long getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Long period) {
+        this.period = period;
     }
 
 }

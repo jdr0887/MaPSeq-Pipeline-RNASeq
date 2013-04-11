@@ -4,6 +4,9 @@
 
   <cm:property-placeholder persistent-id="edu.unc.mapseq.pipeline.rnasequence" update-strategy="reload">
     <cm:default-properties>
+      <cm:property name="corePoolSize" value="20" />
+      <cm:property name="maxPoolSize" value="20" />
+      <cm:property name="period" value="300000" />
       <cm:property name="composite-exons"
         value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.txt" />
       <cm:property name="bed" value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/unc_hg19.bed" />
@@ -60,11 +63,22 @@
     <cm:managed-properties persistent-id="edu.unc.mapseq.pipeline.rnaseq" update-strategy="container-managed" />
   </bean>
 
+  <bean id="threadPoolExecutor" class="edu.unc.mapseq.pipeline.PipelineThreadPoolExecutor">
+    <argument value="${corePoolSize}" />
+    <argument value="${maxPoolSize}" />
+  </bean>
+
+  <bean id="task" class="edu.unc.mapseq.pipeline.rnaseq.RNASeqPipelineExecutorTask">
+    <property name="pipelineBeanService" ref="rnaSeqPipelineBeanService" />
+    <property name="threadPoolExecutor" ref="threadPoolExecutor" />
+  </bean>
+
   <service ref="rnaSeqPipelineBeanService" interface="edu.unc.mapseq.pipeline.PipelineBeanService" />
 
   <bean id="rnaSeqPipelineExecutorService" class="edu.unc.mapseq.pipeline.rnaseq.RNASeqPipelineExecutorService"
     init-method="start" destroy-method="stop" activation="eager">
-    <property name="pipelineBeanService" ref="rnaSeqPipelineBeanService" />
+    <property name="task" ref="task" />
+    <property name="period" value="${period}" />
   </bean>
 
 </blueprint>
