@@ -47,7 +47,7 @@ import edu.unc.mapseq.pipeline.PipelineUtil;
 public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> {
 
     private final Logger logger = LoggerFactory.getLogger(RNASeqPipeline.class);
-    
+
     private final String tcga_comp_exon = "/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.bed";
 
     private RNASeqPipelineBeanService pipelineBeanService;
@@ -301,12 +301,12 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                             getWorkflowPlan(), htsfSample);
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath());
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, tcga_comp_exon);
-                    File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(".coverageBedOut.txt",
-                            ".normBedExonQuantOut.txt"));
+                    File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(
+                            ".coverageBedOut.txt", ".normBedExonQuantOut.txt"));
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.OUTFILE, normBedExonQuantOut.getAbsolutePath());
                     graph.addVertex(normBedExonQuantJob);
-                    graph.addEdge(coverageBedJob,normBedExonQuantJob);
-                    
+                    graph.addEdge(coverageBedJob, normBedExonQuantJob);
+
                     // new job
                     CondorJob sortBAMByReferenceAndNameJob = PipelineJobFactory.createJob(++count,
                             SortByReferenceAndNameCLI.class, getWorkflowPlan(), htsfSample);
