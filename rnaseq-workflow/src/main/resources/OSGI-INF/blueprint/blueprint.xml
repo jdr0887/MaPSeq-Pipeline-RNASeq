@@ -7,7 +7,6 @@
       <cm:property name="corePoolSize" value="20" />
       <cm:property name="maxPoolSize" value="20" />
       <cm:property name="period" value="5" />
-      <!-- /proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem -->
       <cm:property name="composite-exons" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/composite_exons.bed" />
       <cm:property name="bed" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/unc_hg19.bed" />
       <cm:property name="junctions" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/splice_junctions.txt" />
