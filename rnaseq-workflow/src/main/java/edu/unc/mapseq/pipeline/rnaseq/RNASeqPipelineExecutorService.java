@@ -13,7 +13,7 @@ public class RNASeqPipelineExecutorService {
 
     private RNASeqPipelineExecutorTask task;
 
-    private Long period = Long.valueOf(5 * 60 * 1000);
+    private Long period = Long.valueOf(5);
 
     public RNASeqPipelineExecutorService() {
         super();
@@ -22,7 +22,7 @@ public class RNASeqPipelineExecutorService {
     public void start() throws Exception {
         logger.info("ENTERING start()");
         long delay = 1 * 60 * 1000;
-        mainTimer.scheduleAtFixedRate(task, delay, period);
+        mainTimer.scheduleAtFixedRate(task, delay, period * 60 * 1000);
     }
 
     public void stop() throws Exception {
