@@ -128,6 +128,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                 String fastqLaneRootName = StringUtils.removeEnd(r2FastqRootName, "_R2");
 
                 try {
+
                     // new job
                     CondorJob gunzipFastqR1Job = PipelineJobFactory.createJob(++count, GUnZipCLI.class,
                             getWorkflowPlan(), htsfSample);
@@ -188,9 +189,9 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     mapspliceJob.addArgument(MapSpliceCLI.BAM);
                     mapspliceJob.addArgument(MapSpliceCLI.FUSIONNONCANONICAL);
                     mapspliceJob.addArgument(MapSpliceCLI.QUALSCALE, "phred33");
-                    mapspliceJob
-                            .addArgument(MapSpliceCLI.ALLCHROMOSOMEFILES,
-                                    "/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/Genomes/hg19_M_rCRS/hg19_M_rCRS.fa");
+                    // /proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/Genomes/hg19_M_rCRS/hg19_M_rCRS.fa
+                    mapspliceJob.addArgument(MapSpliceCLI.ALLCHROMOSOMEFILES,
+                            "$RNASEQ_MAPSPLICE_RSEM_GENOMES_DIRECTORY/hg19_M_rCRS/hg19_M_rCRS.fa");
                     mapspliceJob.addArgument(MapSpliceCLI.THREADS, 8);
                     mapspliceJob.setNumberOfProcessors(8);
                     mapspliceJob.addArgument(MapSpliceCLI.BOWTIEINDEXPATH,
@@ -285,7 +286,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     CondorJob coverageBedJob = PipelineJobFactory.createJob(++count, CoverageBedCLI.class,
                             getWorkflowPlan(), htsfSample);
                     coverageBedJob.addArgument(CoverageBedCLI.INPUT, samtoolsSortOut.getAbsolutePath());
-                    coverageBedJob.addArgument(CoverageBedCLI.BED, this.getPipelineBeanService().getCompositeExons());
+                    coverageBedJob.addArgument(CoverageBedCLI.BED, this.pipelineBeanService.getCompositeExons());
                     coverageBedJob.addArgument(CoverageBedCLI.SPLITBED);
                     File coverageBedOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".coverageBedOut.txt"));
@@ -297,8 +298,8 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     CondorJob normBedExonQuantJob = PipelineJobFactory.createJob(++count, NormBedExonQuantCLI.class,
                             getWorkflowPlan(), htsfSample);
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath());
-                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, this.getPipelineBeanService()
-                            .getCompositeExons());
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED,
+                            this.pipelineBeanService.getCompositeExons());
                     File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(
                             ".coverageBedOut.txt", ".normBedExonQuantOut.txt"));
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.OUTFILE, normBedExonQuantOut.getAbsolutePath());

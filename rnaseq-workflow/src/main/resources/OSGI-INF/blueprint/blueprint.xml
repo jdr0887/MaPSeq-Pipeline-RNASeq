@@ -7,19 +7,14 @@
       <cm:property name="corePoolSize" value="20" />
       <cm:property name="maxPoolSize" value="20" />
       <cm:property name="period" value="5" />
-      <cm:property name="composite-exons"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.bed" />
-      <cm:property name="bed" value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/unc_hg19.bed" />
-      <cm:property name="junctions"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/splice_junctions.txt" />
-      <cm:property name="bowtie-index-directory"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
-      <cm:property name="chromosome-directory"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/Genomes/hg19_M_rCRS/chromosomes" />
-      <cm:property name="order"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/rsem_ref/hg19_M_rCRS_ref.transcripts.fa" />
-      <cm:property name="reference-sequence-prefix"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/rsem_ref/hg19_M_rCRS_ref" />
+      <!-- /proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem -->
+      <cm:property name="composite-exons" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/composite_exons.bed" />
+      <cm:property name="bed" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/unc_hg19.bed" />
+      <cm:property name="junctions" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/splice_junctions.txt" />
+      <cm:property name="bowtie-index-directory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
+      <cm:property name="chromosome-directory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/chromosomes" />
+      <cm:property name="order" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref.transcripts.fa" />
+      <cm:property name="reference-sequence-prefix" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref" />
     </cm:default-properties>
   </cm:property-placeholder>
 
