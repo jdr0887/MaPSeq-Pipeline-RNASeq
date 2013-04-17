@@ -63,6 +63,11 @@
   </scm>
   <repositories>
     <repository>
+      <id>com.springsource.repository.bundles.external</id>
+      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle External</name>
+      <url>http://repository.springsource.com/maven/bundles/external</url>
+    </repository>
+    <repository>
       <id>renci.repository</id>
       <name>renci.repository</name>
       <url>http://ci-dev.renci.org/nexus/content/repositories/public</url>
