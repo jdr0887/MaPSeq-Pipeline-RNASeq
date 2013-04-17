@@ -18,19 +18,18 @@ import org.slf4j.LoggerFactory;
 import edu.unc.mapseq.dao.MaPSeqDAOException;
 import edu.unc.mapseq.dao.model.HTSFSample;
 import edu.unc.mapseq.dao.model.SequencerRun;
+import edu.unc.mapseq.module.bedtools.CoverageBedCLI;
 import edu.unc.mapseq.module.core.GUnZipCLI;
 import edu.unc.mapseq.module.core.MoveCLI;
 import edu.unc.mapseq.module.core.RemoveCLI;
 import edu.unc.mapseq.module.filter.PruneISOFormsFromGeneQuantFileCLI;
 import edu.unc.mapseq.module.filter.StripTrailingTabsCLI;
-import edu.unc.mapseq.module.mapsplice.MapSplice2CLI;
 import edu.unc.mapseq.module.mapsplice.MapSpliceCLI;
 import edu.unc.mapseq.module.mapsplice.RSEMCalculateExpressionCLI;
 import edu.unc.mapseq.module.picard.PicardAddOrReplaceReadGroupsCLI;
 import edu.unc.mapseq.module.picard.PicardSortOrderType;
-import edu.unc.mapseq.module.qc.NormalizeQuartileCLI;
 import edu.unc.mapseq.module.qc.NormBedExonQuantCLI;
-import edu.unc.mapseq.module.bedtools.CoverageBedCLI;
+import edu.unc.mapseq.module.qc.NormalizeQuartileCLI;
 import edu.unc.mapseq.module.samtools.SAMToolsFlagstatCLI;
 import edu.unc.mapseq.module.samtools.SAMToolsIndexCLI;
 import edu.unc.mapseq.module.samtools.SAMToolsSortCLI;
@@ -47,8 +46,6 @@ import edu.unc.mapseq.pipeline.PipelineUtil;
 public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> {
 
     private final Logger logger = LoggerFactory.getLogger(RNASeqPipeline.class);
-
-    private final String tcga_comp_exon = "/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.bed";
 
     private RNASeqPipelineBeanService pipelineBeanService;
 
@@ -186,7 +183,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     graph.addEdge(fastqFormatterR2Job, removeR2Job);
 
                     // new job
-                    CondorJob mapspliceJob = PipelineJobFactory.createJob(++count, MapSplice2CLI.class,
+                    CondorJob mapspliceJob = PipelineJobFactory.createJob(++count, MapSpliceCLI.class,
                             getWorkflowPlan(), htsfSample);
                     mapspliceJob.addArgument(MapSpliceCLI.BAM);
                     mapspliceJob.addArgument(MapSpliceCLI.FUSIONNONCANONICAL);
@@ -288,7 +285,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     CondorJob coverageBedJob = PipelineJobFactory.createJob(++count, CoverageBedCLI.class,
                             getWorkflowPlan(), htsfSample);
                     coverageBedJob.addArgument(CoverageBedCLI.INPUT, samtoolsSortOut.getAbsolutePath());
-                    coverageBedJob.addArgument(CoverageBedCLI.BED, tcga_comp_exon);
+                    coverageBedJob.addArgument(CoverageBedCLI.BED, this.getPipelineBeanService().getCompositeExons());
                     coverageBedJob.addArgument(CoverageBedCLI.SPLITBED);
                     File coverageBedOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".coverageBedOut.txt"));
@@ -300,7 +297,8 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     CondorJob normBedExonQuantJob = PipelineJobFactory.createJob(++count, NormBedExonQuantCLI.class,
                             getWorkflowPlan(), htsfSample);
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath());
-                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, tcga_comp_exon);
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, this.getPipelineBeanService()
+                            .getCompositeExons());
                     File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(
                             ".coverageBedOut.txt", ".normBedExonQuantOut.txt"));
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.OUTFILE, normBedExonQuantOut.getAbsolutePath());
