@@ -6,9 +6,9 @@
     <cm:default-properties>
       <cm:property name="corePoolSize" value="20" />
       <cm:property name="maxPoolSize" value="20" />
-      <cm:property name="period" value="300000" />
+      <cm:property name="period" value="5" />
       <cm:property name="composite-exons"
-        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.txt" />
+        value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.bed" />
       <cm:property name="bed" value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/unc_hg19.bed" />
       <cm:property name="junctions"
         value="/datastore/rclbg/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/splice_junctions.txt" />
