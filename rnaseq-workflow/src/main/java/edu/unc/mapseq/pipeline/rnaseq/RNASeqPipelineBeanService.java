@@ -18,8 +18,18 @@ public class RNASeqPipelineBeanService extends AbstractPipelineBeanService {
 
     private String referenceSequencePrefix;
 
+    private String siteName;
+
     public RNASeqPipelineBeanService() {
         super();
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
     }
 
     public String getBed() {
