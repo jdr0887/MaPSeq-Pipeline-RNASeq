@@ -1,7 +1,5 @@
 package edu.unc.mapseq.messaging.rnaseq;
 
-import java.util.Date;
-
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -10,7 +8,6 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.junit.Test;
 
 public class RNASeqMessageTest {
@@ -29,9 +26,19 @@ public class RNASeqMessageTest {
             Destination destination = session.createQueue("queue/rnaseq");
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            String format = "{\"account_name\":\"rc_lbg.svc\",\"entities\":[{\"entity_type\":\"HTSFSample\",\"guid\":\"%1$d\"},{\"entity_type\":\"WorkflowRun\",\"name\":\"test-%2$s-%1$d\"}]}";
-            producer.send(session.createTextMessage(String.format(format, 314616,
-                    DateFormatUtils.ISO_DATE_FORMAT.format(new Date()))));
+            String format = "{\"account_name\":\"rc_lbg.svc\",\"entities\":[{\"entity_type\":\"HTSFSample\",\"guid\":\"%1$d\"},{\"entity_type\":\"WorkflowRun\",\"name\":\"RNASeq-CALGB-%1$d\"}]}";
+            //producer.send(session.createTextMessage(String.format(format, 397056L)));
+
+            Integer[] sampleIdentifierArray = new Integer[] { 397057, 397058, 397059, 397060, 397061, 397062, 397063,
+                    397064, 397065, 397066, 397067, 397068, 397069, 397070, 397071, 397072, 397073, 397074, 397075,
+                    397076, 397077, 397078, 397079, 397172, 397173, 397174, 397176, 397177, 397179, 397180, 397182,
+                    397183, 397184, 397186, 397187, 397189, 397190, 397192, 397193, 397194, 397196, 397197, 397199,
+                    397201, 397203, 397204, 397205 };
+
+            for (Integer sampleId : sampleIdentifierArray) {
+                producer.send(session.createTextMessage(String.format(format, sampleId)));
+            }
+            
         } catch (JMSException e) {
             e.printStackTrace();
         } finally {
@@ -44,5 +51,4 @@ public class RNASeqMessageTest {
         }
 
     }
-
 }
