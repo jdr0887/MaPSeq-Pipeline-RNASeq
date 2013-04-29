@@ -2,11 +2,12 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" default-activation="lazy">
 
-  <cm:property-placeholder persistent-id="edu.unc.mapseq.pipeline.rnasequence" update-strategy="reload">
+  <cm:property-placeholder persistent-id="edu.unc.mapseq.pipeline.rnaseq" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="corePoolSize" value="20" />
-      <cm:property name="maxPoolSize" value="20" />
+      <cm:property name="corePoolSize" value="100" />
+      <cm:property name="maxPoolSize" value="100" />
       <cm:property name="period" value="5" />
+      <cm:property name="siteName" value="Kure" />
       <cm:property name="composite-exons" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/composite_exons.bed" />
       <cm:property name="bed" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/unc_hg19.bed" />
       <cm:property name="junctions" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/splice_junctions.txt" />
@@ -54,6 +55,7 @@
     <property name="junctions" value="${junctions}" />
     <property name="bowtieIndexDirectory" value="${bowtie-index-directory}" />
     <property name="chromosomeDirectory" value="${chromosome-directory}" />
+    <property name="siteName" value="${siteName}" />
     <cm:managed-properties persistent-id="edu.unc.mapseq.pipeline.rnaseq" update-strategy="container-managed" />
   </bean>
 
