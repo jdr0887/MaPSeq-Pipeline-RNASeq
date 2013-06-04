@@ -44,8 +44,8 @@
     <dependencies>
       <dependency>
       	<groupId>edu.unc.mapseq</groupId>
-      	<artifactId>mapseq-modules</artifactId>
-      	<version>${mapseq.version}</version>
+      	<artifactId>modules</artifactId>
+      	<version>0.0.1</version>
       </dependency>
       <dependency>
       	<groupId>edu.unc.mapseq.pipelines.rnaseq</groupId>
