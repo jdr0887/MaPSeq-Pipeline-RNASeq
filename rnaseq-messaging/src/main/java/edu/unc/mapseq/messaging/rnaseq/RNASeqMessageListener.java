@@ -23,13 +23,13 @@ import edu.unc.mapseq.dao.model.WorkflowPlan;
 import edu.unc.mapseq.dao.model.WorkflowRun;
 import edu.unc.mapseq.dao.model.WorkflowRunStatusType;
 import edu.unc.mapseq.pipeline.EntityUtil;
-import edu.unc.mapseq.pipeline.rnaseq.RNASeqPipelineBeanService;
+import edu.unc.mapseq.pipeline.PipelineBeanService;
 
 public class RNASeqMessageListener implements MessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(RNASeqMessageListener.class);
 
-    private RNASeqPipelineBeanService pipelineBeanService;
+    private PipelineBeanService pipelineBeanService;
 
     public RNASeqMessageListener() {
         super();
@@ -156,11 +156,11 @@ public class RNASeqMessageListener implements MessageListener {
         }
     }
 
-    public RNASeqPipelineBeanService getPipelineBeanService() {
+    public PipelineBeanService getPipelineBeanService() {
         return pipelineBeanService;
     }
 
-    public void setPipelineBeanService(RNASeqPipelineBeanService pipelineBeanService) {
+    public void setPipelineBeanService(PipelineBeanService pipelineBeanService) {
         this.pipelineBeanService = pipelineBeanService;
     }
 
