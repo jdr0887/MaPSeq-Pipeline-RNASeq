@@ -39,15 +39,16 @@ import edu.unc.mapseq.module.ubu.UBUSamFilterCLI;
 import edu.unc.mapseq.module.ubu.UBUSamJunctionCLI;
 import edu.unc.mapseq.module.ubu.UBUSamTranslateCLI;
 import edu.unc.mapseq.pipeline.AbstractPipeline;
+import edu.unc.mapseq.pipeline.PipelineBeanService;
 import edu.unc.mapseq.pipeline.PipelineException;
 import edu.unc.mapseq.pipeline.PipelineJobFactory;
 import edu.unc.mapseq.pipeline.PipelineUtil;
 
-public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> {
+public class RNASeqPipeline extends AbstractPipeline {
 
     private final Logger logger = LoggerFactory.getLogger(RNASeqPipeline.class);
 
-    private RNASeqPipelineBeanService pipelineBeanService;
+    private PipelineBeanService pipelineBeanService;
 
     public RNASeqPipeline() {
         super();
@@ -97,6 +98,8 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
 
         logger.info("htsfSampleSet.size(): {}", htsfSampleSet.size());
 
+        String siteName = getPipelineBeanService().getAttributes().get("siteName");
+
         for (HTSFSample htsfSample : htsfSampleSet) {
 
             if ("Undetermined".equals(htsfSample.getBarcode())) {
@@ -130,7 +133,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob gunzipFastqR1Job = PipelineJobFactory.createJob(++count, GUnZipCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    gunzipFastqR1Job.setSiteName(getPipelineBeanService().getSiteName());
+                    gunzipFastqR1Job.setSiteName(siteName);
                     gunzipFastqR1Job.addArgument(GUnZipCLI.GZFILE, r1FastqFile.getAbsolutePath());
                     File gunzippedFastqR1 = new File(outputDirectory, r1FastqRootName + ".fastq");
                     gunzipFastqR1Job.addArgument(GUnZipCLI.EXTRACTFILE, gunzippedFastqR1.getAbsolutePath());
@@ -139,7 +142,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob fastqFormatterR1Job = PipelineJobFactory.createJob(++count, UBUFastqFormatterCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    fastqFormatterR1Job.setSiteName(getPipelineBeanService().getSiteName());
+                    fastqFormatterR1Job.setSiteName(siteName);
                     fastqFormatterR1Job.addArgument(UBUFastqFormatterCLI.INPUT, gunzippedFastqR1.getAbsolutePath());
                     fastqFormatterR1Job.addArgument(UBUFastqFormatterCLI.STRIP);
                     fastqFormatterR1Job.addArgument(UBUFastqFormatterCLI.SUFFIX, "/1");
@@ -152,7 +155,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob removeR1Job = PipelineJobFactory.createJob(++count, RemoveCLI.class, getWorkflowPlan(),
                             htsfSample);
-                    removeR1Job.setSiteName(getPipelineBeanService().getSiteName());
+                    removeR1Job.setSiteName(siteName);
                     removeR1Job.addArgument(RemoveCLI.FILE, gunzippedFastqR1.getAbsolutePath());
                     graph.addVertex(removeR1Job);
                     graph.addEdge(fastqFormatterR1Job, removeR1Job);
@@ -160,7 +163,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob gunzipFastqR2Job = PipelineJobFactory.createJob(++count, GUnZipCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    gunzipFastqR2Job.setSiteName(getPipelineBeanService().getSiteName());
+                    gunzipFastqR2Job.setSiteName(siteName);
                     gunzipFastqR2Job.addArgument(GUnZipCLI.GZFILE, r2FastqFile.getAbsolutePath());
                     File gunzippedFastqR2 = new File(outputDirectory, r2FastqRootName + ".fastq");
                     gunzipFastqR2Job.addArgument(GUnZipCLI.EXTRACTFILE, gunzippedFastqR2.getAbsolutePath());
@@ -169,7 +172,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob fastqFormatterR2Job = PipelineJobFactory.createJob(++count, UBUFastqFormatterCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    fastqFormatterR2Job.setSiteName(getPipelineBeanService().getSiteName());
+                    fastqFormatterR2Job.setSiteName(siteName);
                     fastqFormatterR2Job.addArgument(UBUFastqFormatterCLI.INPUT, gunzippedFastqR2.getAbsolutePath());
                     fastqFormatterR2Job.addArgument(UBUFastqFormatterCLI.STRIP);
                     fastqFormatterR2Job.addArgument(UBUFastqFormatterCLI.SUFFIX, "/2");
@@ -182,7 +185,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob removeR2Job = PipelineJobFactory.createJob(++count, RemoveCLI.class, getWorkflowPlan(),
                             htsfSample);
-                    removeR2Job.setSiteName(getPipelineBeanService().getSiteName());
+                    removeR2Job.setSiteName(siteName);
                     removeR2Job.addArgument(RemoveCLI.FILE, gunzippedFastqR2.getAbsolutePath());
                     graph.addVertex(removeR2Job);
                     graph.addEdge(fastqFormatterR2Job, removeR2Job);
@@ -190,7 +193,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob mapspliceJob = PipelineJobFactory.createJob(++count, MapSpliceCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    mapspliceJob.setSiteName(getPipelineBeanService().getSiteName());
+                    mapspliceJob.setSiteName(siteName);
                     mapspliceJob.addArgument(MapSpliceCLI.BAM);
                     mapspliceJob.addArgument(MapSpliceCLI.FUSIONNONCANONICAL);
                     mapspliceJob.addArgument(MapSpliceCLI.QUALSCALE, "phred33");
@@ -199,10 +202,10 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                             "$RNASEQ_MAPSPLICE_RSEM_GENOMES_DIRECTORY/hg19_M_rCRS/hg19_M_rCRS.fa");
                     mapspliceJob.addArgument(MapSpliceCLI.THREADS, 8);
                     mapspliceJob.setNumberOfProcessors(8);
-                    mapspliceJob.addArgument(MapSpliceCLI.BOWTIEINDEXPATH,
-                            this.pipelineBeanService.getBowtieIndexDirectory());
-                    mapspliceJob.addArgument(MapSpliceCLI.CHROMOSOMEDIRECTORY,
-                            this.pipelineBeanService.getChromosomeDirectory());
+                    mapspliceJob.addArgument(MapSpliceCLI.BOWTIEINDEXPATH, getPipelineBeanService().getAttributes()
+                            .get("bowtieIndexDirectory"));
+                    mapspliceJob.addArgument(MapSpliceCLI.CHROMOSOMEDIRECTORY, getPipelineBeanService().getAttributes()
+                            .get("chromosomeDirectory"));
                     mapspliceJob.addArgument(MapSpliceCLI.FASTQR1, fastqFormatterR1Out.getAbsolutePath());
                     mapspliceJob.addArgument(MapSpliceCLI.FASTQR2, fastqFormatterR2Out.getAbsolutePath());
                     mapspliceJob.addArgument(MapSpliceCLI.OUTPUT, outputDirectory.getAbsolutePath());
@@ -213,7 +216,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob moveJob = PipelineJobFactory.createJob(++count, MoveCLI.class, getWorkflowPlan(),
                             htsfSample, false);
-                    moveJob.setSiteName(getPipelineBeanService().getSiteName());
+                    moveJob.setSiteName(siteName);
                     File mapspliceOutput = new File(outputDirectory, "alignments.bam");
                     moveJob.addArgument(MoveCLI.SOURCE, mapspliceOutput.getAbsolutePath());
                     File mapspliceRenamedOutput = new File(outputDirectory, fastqLaneRootName + ".bam");
@@ -224,7 +227,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob picardAddOrReplaceReadGroupsJob = PipelineJobFactory.createJob(++count,
                             PicardAddOrReplaceReadGroupsCLI.class, getWorkflowPlan(), htsfSample);
-                    picardAddOrReplaceReadGroupsJob.setSiteName(getPipelineBeanService().getSiteName());
+                    picardAddOrReplaceReadGroupsJob.setSiteName(siteName);
                     picardAddOrReplaceReadGroupsJob.addArgument(PicardAddOrReplaceReadGroupsCLI.INPUT,
                             mapspliceRenamedOutput.getAbsolutePath());
                     File fixRGOutput = new File(outputDirectory, mapspliceRenamedOutput.getName().replace(".bam",
@@ -249,7 +252,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob samtoolsSortJob = PipelineJobFactory.createJob(++count, SAMToolsSortCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    samtoolsSortJob.setSiteName(getPipelineBeanService().getSiteName());
+                    samtoolsSortJob.setSiteName(siteName);
                     samtoolsSortJob.addArgument(SAMToolsSortCLI.INPUT, fixRGOutput.getAbsolutePath());
                     File samtoolsSortOut = new File(outputDirectory, fixRGOutput.getName().replace(".bam",
                             ".sorted.bam"));
@@ -260,7 +263,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob samtoolsIndexJob = PipelineJobFactory.createJob(++count, SAMToolsIndexCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    samtoolsIndexJob.setSiteName(getPipelineBeanService().getSiteName());
+                    samtoolsIndexJob.setSiteName(siteName);
                     samtoolsIndexJob.addArgument(SAMToolsIndexCLI.INPUT, samtoolsSortOut.getAbsolutePath());
                     File samtoolsIndexOutput = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".bai"));
@@ -271,7 +274,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob samtoolsFlagstatJob = PipelineJobFactory.createJob(++count, SAMToolsFlagstatCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    samtoolsFlagstatJob.setSiteName(getPipelineBeanService().getSiteName());
+                    samtoolsFlagstatJob.setSiteName(siteName);
                     samtoolsFlagstatJob.addArgument(SAMToolsFlagstatCLI.INPUT, samtoolsSortOut.getAbsolutePath());
                     File samtoolsFlagstatOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".flagstat"));
@@ -282,8 +285,9 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob ubuSamJunctionJob = PipelineJobFactory.createJob(++count, UBUSamJunctionCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    ubuSamJunctionJob.setSiteName(getPipelineBeanService().getSiteName());
-                    ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.JUNCTIONS, this.pipelineBeanService.getJunctions());
+                    ubuSamJunctionJob.setSiteName(siteName);
+                    ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.JUNCTIONS, getPipelineBeanService().getAttributes()
+                            .get("junctions"));
                     ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.INPUT, samtoolsSortOut.getAbsolutePath());
                     File ubuSamJunctionOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".junction_quantification.txt"));
@@ -294,9 +298,10 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob coverageBedJob = PipelineJobFactory.createJob(++count, CoverageBedCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    coverageBedJob.setSiteName(getPipelineBeanService().getSiteName());
+                    coverageBedJob.setSiteName(siteName);
                     coverageBedJob.addArgument(CoverageBedCLI.INPUT, samtoolsSortOut.getAbsolutePath());
-                    coverageBedJob.addArgument(CoverageBedCLI.BED, this.pipelineBeanService.getCompositeExons());
+                    coverageBedJob.addArgument(CoverageBedCLI.BED,
+                            getPipelineBeanService().getAttributes().get("compositeExons"));
                     coverageBedJob.addArgument(CoverageBedCLI.SPLITBED);
                     File coverageBedOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".coverageBedOut.txt"));
@@ -307,10 +312,10 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob normBedExonQuantJob = PipelineJobFactory.createJob(++count, NormBedExonQuantCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    normBedExonQuantJob.setSiteName(getPipelineBeanService().getSiteName());
+                    normBedExonQuantJob.setSiteName(siteName);
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath());
-                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED,
-                            this.pipelineBeanService.getCompositeExons());
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, getPipelineBeanService()
+                            .getAttributes().get("compositeExons"));
                     File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(
                             ".coverageBedOut.txt", ".normBedExonQuantOut.txt"));
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.OUTFILE, normBedExonQuantOut.getAbsolutePath());
@@ -320,7 +325,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob sortBAMByReferenceAndNameJob = PipelineJobFactory.createJob(++count,
                             SortByReferenceAndNameCLI.class, getWorkflowPlan(), htsfSample);
-                    sortBAMByReferenceAndNameJob.setSiteName(getPipelineBeanService().getSiteName());
+                    sortBAMByReferenceAndNameJob.setSiteName(siteName);
                     sortBAMByReferenceAndNameJob.addArgument(SortByReferenceAndNameCLI.INPUT,
                             samtoolsSortOut.getAbsolutePath());
                     File sortBAMByReferenceAndNameOut = new File(outputDirectory, samtoolsSortOut.getName().replace(
@@ -333,14 +338,16 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob ubuSamTranslateJob = PipelineJobFactory.createJob(++count, UBUSamTranslateCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    ubuSamTranslateJob.setSiteName(getPipelineBeanService().getSiteName());
-                    ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.BED, this.pipelineBeanService.getBed());
+                    ubuSamTranslateJob.setSiteName(siteName);
+                    ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.BED, getPipelineBeanService().getAttributes()
+                            .get("bed"));
                     ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.INPUT,
                             sortBAMByReferenceAndNameOut.getAbsolutePath());
                     File ubuSamTranslateOut = new File(outputDirectory, sortBAMByReferenceAndNameOut.getName().replace(
                             ".bam", ".transcriptomeAlignments.bam"));
                     ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.OUTPUT, ubuSamTranslateOut.getAbsolutePath());
-                    ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.ORDER, this.pipelineBeanService.getOrder());
+                    ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.ORDER, getPipelineBeanService().getAttributes()
+                            .get("order"));
                     ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.XGTAGS);
                     ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.REVERSE);
                     graph.addVertex(ubuSamTranslateJob);
@@ -349,7 +356,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob ubuSamFilterJob = PipelineJobFactory.createJob(++count, UBUSamFilterCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    ubuSamFilterJob.setSiteName(getPipelineBeanService().getSiteName());
+                    ubuSamFilterJob.setSiteName(siteName);
                     ubuSamFilterJob.addArgument(UBUSamFilterCLI.INPUT, ubuSamTranslateOut.getAbsolutePath());
                     File ubuSamFilterOut = new File(outputDirectory, ubuSamTranslateOut.getName().replace(".bam",
                             ".filtered.bam"));
@@ -363,15 +370,15 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob rsemJob = PipelineJobFactory.createJob(++count, RSEMCalculateExpressionCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    rsemJob.setSiteName(getPipelineBeanService().getSiteName());
+                    rsemJob.setSiteName(siteName);
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.PAIREDEND);
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.BAM);
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.ESTIMATERSPD);
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.THREADS, "4");
                     rsemJob.setNumberOfProcessors(4);
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.BAMFILE, ubuSamFilterOut.getAbsolutePath());
-                    rsemJob.addArgument(RSEMCalculateExpressionCLI.REFERENCESEQUENCE,
-                            this.pipelineBeanService.getReferenceSequencePrefix());
+                    rsemJob.addArgument(RSEMCalculateExpressionCLI.REFERENCESEQUENCE, getPipelineBeanService()
+                            .getAttributes().get("referenceSequencePrefix"));
                     File outputPrefix = new File(outputDirectory, "rsem");
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.OUTPUT, outputPrefix.getAbsolutePath());
                     graph.addVertex(rsemJob);
@@ -380,7 +387,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob rsemISOFormsResultStripTabJob = PipelineJobFactory.createJob(++count,
                             StripTrailingTabsCLI.class, getWorkflowPlan(), htsfSample);
-                    rsemISOFormsResultStripTabJob.setSiteName(getPipelineBeanService().getSiteName());
+                    rsemISOFormsResultStripTabJob.setSiteName(siteName);
                     File isoformResults = new File(outputDirectory, outputPrefix.getName() + ".isoforms.results");
                     rsemISOFormsResultStripTabJob.addArgument(StripTrailingTabsCLI.INPUT,
                             isoformResults.getAbsolutePath());
@@ -396,7 +403,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob pruneISOFormsFromGeneQuantFileJob = PipelineJobFactory.createJob(++count,
                             PruneISOFormsFromGeneQuantFileCLI.class, getWorkflowPlan(), htsfSample);
-                    pruneISOFormsFromGeneQuantFileJob.setSiteName(getPipelineBeanService().getSiteName());
+                    pruneISOFormsFromGeneQuantFileJob.setSiteName(siteName);
                     File geneResultsFile = new File(outputDirectory, outputPrefix.getName() + ".genes.results");
                     pruneISOFormsFromGeneQuantFileJob.addArgument(PruneISOFormsFromGeneQuantFileCLI.GENERESULTS,
                             geneResultsFile.getAbsolutePath());
@@ -410,7 +417,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob normalizeGeneQuantJob = PipelineJobFactory.createJob(++count, NormalizeQuartileCLI.class,
                             getWorkflowPlan(), htsfSample);
-                    normalizeGeneQuantJob.setSiteName(getPipelineBeanService().getSiteName());
+                    normalizeGeneQuantJob.setSiteName(siteName);
                     normalizeGeneQuantJob.addArgument(NormalizeQuartileCLI.COLUMN, "2");
                     normalizeGeneQuantJob.addArgument(NormalizeQuartileCLI.QUANTILE, "75");
                     normalizeGeneQuantJob.addArgument(NormalizeQuartileCLI.TARGET, "1000");
@@ -425,7 +432,7 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
                     // new job
                     CondorJob normalizeISOFormQuantJob = PipelineJobFactory.createJob(++count,
                             NormalizeQuartileCLI.class, getWorkflowPlan(), htsfSample);
-                    normalizeISOFormQuantJob.setSiteName(getPipelineBeanService().getSiteName());
+                    normalizeISOFormQuantJob.setSiteName(siteName);
                     normalizeISOFormQuantJob.addArgument(NormalizeQuartileCLI.COLUMN, "2");
                     normalizeISOFormQuantJob.addArgument(NormalizeQuartileCLI.QUANTILE, "75");
                     normalizeISOFormQuantJob.addArgument(NormalizeQuartileCLI.TARGET, "300");
@@ -447,11 +454,11 @@ public class RNASeqPipeline extends AbstractPipeline<RNASeqPipelineBeanService> 
         return graph;
     }
 
-    public RNASeqPipelineBeanService getPipelineBeanService() {
+    public PipelineBeanService getPipelineBeanService() {
         return pipelineBeanService;
     }
 
-    public void setPipelineBeanService(RNASeqPipelineBeanService pipelineBeanService) {
+    public void setPipelineBeanService(PipelineBeanService pipelineBeanService) {
         this.pipelineBeanService = pipelineBeanService;
     }
 
