@@ -15,7 +15,7 @@ import org.apache.karaf.shell.console.AbstractAction;
 import edu.unc.mapseq.config.MaPSeqConfigurationService;
 import edu.unc.mapseq.dao.MaPSeqDAOBean;
 
-@Command(scope = "mapseq", name = "run-rnaseq-pipeline", description = "Run RNASeq Pipeline")
+@Command(scope = "rnaseq", name = "run-pipeline", description = "Run RNASeq Pipeline")
 public class RunRNASeqPipelineAction extends AbstractAction {
 
     @Argument(index = 0, name = "workflowRunName", description = "WorkflowRun.name", required = true, multiValued = false)
