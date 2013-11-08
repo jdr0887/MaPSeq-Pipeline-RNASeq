@@ -104,7 +104,7 @@ public class RNASeqPipeline extends AbstractPipeline {
             }
 
             SequencerRun sequencerRun = htsfSample.getSequencerRun();
-            File outputDirectory = createOutputDirectory(sequencerRun.getName(), htsfSample, getName());
+            File outputDirectory = createOutputDirectory(sequencerRun.getName(), htsfSample, getName(), getVersion());
 
             List<File> readPairList = PipelineUtil.getReadPairList(htsfSample.getFileDatas(), sequencerRun.getName(),
                     htsfSample.getLaneIndex());
