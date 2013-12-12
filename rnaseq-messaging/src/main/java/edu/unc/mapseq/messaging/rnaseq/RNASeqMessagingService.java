@@ -9,7 +9,7 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.unc.mapseq.pipeline.PipelineBeanService;
+import edu.unc.mapseq.workflow.WorkflowBeanService;
 
 public class RNASeqMessagingService {
 
@@ -21,7 +21,7 @@ public class RNASeqMessagingService {
 
     private ConnectionFactory connectionFactory;
 
-    private PipelineBeanService pipelineBeanService;
+    private WorkflowBeanService workflowBeanService;
 
     private String destinationName;
 
@@ -32,7 +32,7 @@ public class RNASeqMessagingService {
         Destination destination = this.session.createQueue(this.destinationName);
         MessageConsumer consumer = session.createConsumer(destination);
         RNASeqMessageListener messageListener = new RNASeqMessageListener();
-        messageListener.setPipelineBeanService(pipelineBeanService);
+        messageListener.setWorkflowBeanService(workflowBeanService);
         consumer.setMessageListener(messageListener);
         this.connection.start();
     }
@@ -56,12 +56,12 @@ public class RNASeqMessagingService {
         this.connectionFactory = connectionFactory;
     }
 
-    public PipelineBeanService getPipelineBeanService() {
-        return pipelineBeanService;
+    public WorkflowBeanService getWorkflowBeanService() {
+        return workflowBeanService;
     }
 
-    public void setPipelineBeanService(PipelineBeanService pipelineBeanService) {
-        this.pipelineBeanService = pipelineBeanService;
+    public void setWorkflowBeanService(WorkflowBeanService workflowBeanService) {
+        this.workflowBeanService = workflowBeanService;
     }
 
     public String getDestinationName() {
