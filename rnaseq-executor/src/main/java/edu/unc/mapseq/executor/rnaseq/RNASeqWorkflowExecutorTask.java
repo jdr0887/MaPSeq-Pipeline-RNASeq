@@ -55,16 +55,16 @@ public class RNASeqWorkflowExecutorTask extends TimerTask {
                 logger.info("dequeuing {} WorkflowPlans", workflowPlanList.size());
                 for (WorkflowPlan workflowPlan : workflowPlanList) {
 
-                    RNASeqWorkflow pipeline = new RNASeqWorkflow();
+                    RNASeqWorkflow rnaSeqWorkflow = new RNASeqWorkflow();
 
                     WorkflowRun workflowRun = workflowPlan.getWorkflowRun();
-                    workflowRun.setVersion(pipeline.getVersion());
+                    workflowRun.setVersion(rnaSeqWorkflow.getVersion());
                     workflowRun.setDequeuedDate(new Date());
                     workflowRunDAO.save(workflowRun);
 
-                    pipeline.setWorkflowBeanService(workflowBeanService);
-                    pipeline.setWorkflowPlan(workflowPlan);
-                    threadPoolExecutor.submit(new WorkflowExecutor(pipeline));
+                    rnaSeqWorkflow.setWorkflowBeanService(workflowBeanService);
+                    rnaSeqWorkflow.setWorkflowPlan(workflowPlan);
+                    threadPoolExecutor.submit(new WorkflowExecutor(rnaSeqWorkflow));
 
                 }
 
