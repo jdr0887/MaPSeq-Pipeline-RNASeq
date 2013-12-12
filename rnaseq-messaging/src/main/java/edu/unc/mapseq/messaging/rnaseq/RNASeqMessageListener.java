@@ -22,14 +22,14 @@ import edu.unc.mapseq.dao.model.SequencerRun;
 import edu.unc.mapseq.dao.model.WorkflowPlan;
 import edu.unc.mapseq.dao.model.WorkflowRun;
 import edu.unc.mapseq.dao.model.WorkflowRunStatusType;
-import edu.unc.mapseq.pipeline.EntityUtil;
-import edu.unc.mapseq.pipeline.PipelineBeanService;
+import edu.unc.mapseq.workflow.EntityUtil;
+import edu.unc.mapseq.workflow.WorkflowBeanService;
 
 public class RNASeqMessageListener implements MessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(RNASeqMessageListener.class);
 
-    private PipelineBeanService pipelineBeanService;
+    private WorkflowBeanService workflowBeanService;
 
     public RNASeqMessageListener() {
         super();
@@ -81,7 +81,7 @@ public class RNASeqMessageListener implements MessageListener {
             String accountName = jsonMessage.getString("account_name");
 
             try {
-                account = this.pipelineBeanService.getMaPSeqDAOBean().getAccountDAO().findByName(accountName);
+                account = this.workflowBeanService.getMaPSeqDAOBean().getAccountDAO().findByName(accountName);
             } catch (MaPSeqDAOException e) {
             }
 
@@ -101,18 +101,18 @@ public class RNASeqMessageListener implements MessageListener {
                     String entityType = entityJSONObject.getString("entity_type");
 
                     if ("Sequencer run".equals(entityType) || SequencerRun.class.getSimpleName().equals(entityType)) {
-                        sequencerRun = EntityUtil.getSequencerRun(pipelineBeanService.getMaPSeqDAOBean(),
+                        sequencerRun = EntityUtil.getSequencerRun(workflowBeanService.getMaPSeqDAOBean(),
                                 entityJSONObject);
                     }
 
                     if ("HTSF Sample".equals(entityType) || HTSFSample.class.getSimpleName().equals(entityType)) {
-                        HTSFSample htsfSample = EntityUtil.getHTSFSample(pipelineBeanService.getMaPSeqDAOBean(),
+                        HTSFSample htsfSample = EntityUtil.getHTSFSample(workflowBeanService.getMaPSeqDAOBean(),
                                 entityJSONObject);
                         htsfSampleSet.add(htsfSample);
                     }
 
                     if ("Workflow run".equals(entityType) || WorkflowRun.class.getSimpleName().equals(entityType)) {
-                        workflowRun = EntityUtil.getWorkflowRun(pipelineBeanService.getMaPSeqDAOBean(), "RNASeq",
+                        workflowRun = EntityUtil.getWorkflowRun(workflowBeanService.getMaPSeqDAOBean(), "RNASeq",
                                 entityJSONObject, account);
                     }
 
@@ -135,7 +135,7 @@ public class RNASeqMessageListener implements MessageListener {
         }
 
         try {
-            Long workflowRunId = pipelineBeanService.getMaPSeqDAOBean().getWorkflowRunDAO().save(workflowRun);
+            Long workflowRunId = workflowBeanService.getMaPSeqDAOBean().getWorkflowRunDAO().save(workflowRun);
             workflowRun.setId(workflowRunId);
         } catch (MaPSeqDAOException e) {
             e.printStackTrace();
@@ -150,18 +150,18 @@ public class RNASeqMessageListener implements MessageListener {
             if (sequencerRun != null) {
                 workflowPlan.setSequencerRun(sequencerRun);
             }
-            this.pipelineBeanService.getMaPSeqDAOBean().getWorkflowPlanDAO().save(workflowPlan);
+            this.workflowBeanService.getMaPSeqDAOBean().getWorkflowPlanDAO().save(workflowPlan);
         } catch (MaPSeqDAOException e) {
             e.printStackTrace();
         }
     }
 
-    public PipelineBeanService getPipelineBeanService() {
-        return pipelineBeanService;
+    public WorkflowBeanService getWorkflowBeanService() {
+        return workflowBeanService;
     }
 
-    public void setPipelineBeanService(PipelineBeanService pipelineBeanService) {
-        this.pipelineBeanService = pipelineBeanService;
+    public void setWorkflowBeanService(WorkflowBeanService workflowBeanService) {
+        this.workflowBeanService = workflowBeanService;
     }
 
 }
