@@ -7,13 +7,13 @@
       <cm:property name="corePoolSize" value="100" />
       <cm:property name="maxPoolSize" value="100" />
       <cm:property name="siteName" value="Kure" />
-      <cm:property name="composite-exons" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/composite_exons.bed" />
+      <cm:property name="compositeExons" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/composite_exons.bed" />
       <cm:property name="bed" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/unc_hg19.bed" />
       <cm:property name="junctions" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/splice_junctions.txt" />
-      <cm:property name="bowtie-index-directory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
-      <cm:property name="chromosome-directory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/chromosomes" />
+      <cm:property name="bowtieIndexDirectory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
+      <cm:property name="chromosomeDirectory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/chromosomes" />
       <cm:property name="order" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref.transcripts.fa" />
-      <cm:property name="reference-sequence-prefix" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref" />
+      <cm:property name="referenceSequencePrefix" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref" />
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -54,10 +54,10 @@
         <entry key="compositeExons" value="${composite-exons}" />
         <entry key="bed" value="${bed}" />
         <entry key="order" value="${order}" />
-        <entry key="referenceSequencePrefix" value="${reference-sequence-prefix}" />
+        <entry key="referenceSequencePrefix" value="${referenceSequencePrefix}" />
         <entry key="junctions" value="${junctions}" />
-        <entry key="bowtieIndexDirectory" value="${bowtie-index-directory}" />
-        <entry key="chromosomeDirectory" value="${chromosome-directory}" />
+        <entry key="bowtieIndexDirectory" value="${bowtieIndexDirectory}" />
+        <entry key="chromosomeDirectory" value="${chromosomeDirectory}" />
         <entry key="siteName" value="${siteName}" />
       </map>
     </property>
