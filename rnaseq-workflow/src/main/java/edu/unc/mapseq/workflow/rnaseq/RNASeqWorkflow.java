@@ -175,6 +175,18 @@ public class RNASeqWorkflow extends AbstractWorkflow {
         String allChromosomeFiles = getWorkflowBeanService().getAttributes().get("allChromosomeFiles");
         logger.info("allChromosomeFiles: {}", allChromosomeFiles);
 
+        String junctions = getWorkflowBeanService().getAttributes().get("junctions");
+        logger.info("junctions: {}", junctions);
+
+        String compositeExons = getWorkflowBeanService().getAttributes().get("compositeExons");
+        logger.info("compositeExons: {}", compositeExons);
+
+        String bed = getWorkflowBeanService().getAttributes().get("bed");
+        logger.info("bed: {}", bed);
+
+        String referenceSequencePrefix = getWorkflowBeanService().getAttributes().get("referenceSequencePrefix");
+        logger.info("referenceSequencePrefix: {}", referenceSequencePrefix);
+
         for (HTSFSample htsfSample : htsfSampleSet) {
 
             if ("Undetermined".equals(htsfSample.getBarcode())) {
@@ -1055,8 +1067,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
                     CondorJob ubuSamJunctionJob = WorkflowJobFactory.createJob(++count, UBUSamJunctionCLI.class,
                             getWorkflowPlan(), htsfSample);
                     ubuSamJunctionJob.setSiteName(siteName);
-                    ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.JUNCTIONS, getWorkflowBeanService().getAttributes()
-                            .get("junctions"));
+                    ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.JUNCTIONS, junctions);
                     ubuSamJunctionJob.addArgument(UBUSamJunctionCLI.INPUT, samtoolsSortOut.getAbsolutePath());
                     File ubuSamJunctionOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".junction_quantification.txt"));
@@ -1069,8 +1080,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
                             getWorkflowPlan(), htsfSample);
                     coverageBedJob.setSiteName(siteName);
                     coverageBedJob.addArgument(CoverageBedCLI.INPUT, samtoolsSortOut.getAbsolutePath());
-                    coverageBedJob.addArgument(CoverageBedCLI.BED,
-                            getWorkflowBeanService().getAttributes().get("compositeExons"));
+                    coverageBedJob.addArgument(CoverageBedCLI.BED, compositeExons);
                     coverageBedJob.addArgument(CoverageBedCLI.SPLITBED);
                     File coverageBedOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                             ".coverageBedOut.txt"));
@@ -1083,8 +1093,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
                             getWorkflowPlan(), htsfSample);
                     normBedExonQuantJob.setSiteName(siteName);
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath());
-                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, getWorkflowBeanService()
-                            .getAttributes().get("compositeExons"));
+                    normBedExonQuantJob.addArgument(NormBedExonQuantCLI.COMPOSITEBED, compositeExons);
                     File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(
                             ".coverageBedOut.txt", ".normBedExonQuantOut.txt"));
                     normBedExonQuantJob.addArgument(NormBedExonQuantCLI.OUTFILE, normBedExonQuantOut.getAbsolutePath());
@@ -1108,8 +1117,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
                     CondorJob ubuSamTranslateJob = WorkflowJobFactory.createJob(++count, UBUSamTranslateCLI.class,
                             getWorkflowPlan(), htsfSample);
                     ubuSamTranslateJob.setSiteName(siteName);
-                    ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.BED, getWorkflowBeanService().getAttributes()
-                            .get("bed"));
+                    ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.BED, bed);
                     ubuSamTranslateJob.addArgument(UBUSamTranslateCLI.INPUT,
                             sortBAMByReferenceAndNameOut.getAbsolutePath());
                     File ubuSamTranslateOut = new File(outputDirectory, sortBAMByReferenceAndNameOut.getName().replace(
@@ -1146,8 +1154,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.THREADS, "4");
                     rsemJob.setNumberOfProcessors(4);
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.BAMFILE, ubuSamFilterOut.getAbsolutePath());
-                    rsemJob.addArgument(RSEMCalculateExpressionCLI.REFERENCESEQUENCE, getWorkflowBeanService()
-                            .getAttributes().get("referenceSequencePrefix"));
+                    rsemJob.addArgument(RSEMCalculateExpressionCLI.REFERENCESEQUENCE, referenceSequencePrefix);
                     File outputPrefix = new File(outputDirectory, "rsem");
                     rsemJob.addArgument(RSEMCalculateExpressionCLI.OUTPUT, outputPrefix.getAbsolutePath());
                     graph.addVertex(rsemJob);
@@ -1238,5 +1245,4 @@ public class RNASeqWorkflow extends AbstractWorkflow {
 
         return graph;
     }
-
 }
