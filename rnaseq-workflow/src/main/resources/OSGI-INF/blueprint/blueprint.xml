@@ -13,7 +13,6 @@
       <cm:property name="bowtieIndexDirectory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
       <cm:property name="chromosomeDirectory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/chromosomes" />
       <cm:property name="order" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref.transcripts.fa" />
-      <cm:property name="allChromosomeFiles" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/hg19_M_rCRS.fa" />
       <cm:property name="referenceSequencePrefix" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref" />
     </cm:default-properties>
   </cm:property-placeholder>
@@ -60,7 +59,6 @@
         <entry key="bowtieIndexDirectory" value="${bowtieIndexDirectory}" />
         <entry key="chromosomeDirectory" value="${chromosomeDirectory}" />
         <entry key="siteName" value="${siteName}" />
-        <entry key="allChromosomeFiles" value="${allChromosomeFiles}" />
       </map>
     </property>
     <cm:managed-properties persistent-id="edu.unc.mapseq.workflow.rnaseq" update-strategy="container-managed" />
