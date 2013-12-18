@@ -165,7 +165,8 @@ public class RNASeqWorkflow extends AbstractWorkflow {
         logger.info("htsfSampleSet.size(): {}", htsfSampleSet.size());
 
         String siteName = getWorkflowBeanService().getAttributes().get("siteName");
-
+        logger.info("siteName: {}", siteName);
+        
         String bowtieIndexDirectory = getWorkflowBeanService().getAttributes().get("bowtieIndexDirectory");
         logger.info("bowtieIndexDirectory: {}", bowtieIndexDirectory);
 
