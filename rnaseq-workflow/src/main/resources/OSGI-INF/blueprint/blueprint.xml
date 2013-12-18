@@ -7,13 +7,13 @@
       <cm:property name="corePoolSize" value="100" />
       <cm:property name="maxPoolSize" value="100" />
       <cm:property name="siteName" value="Kure" />
-      <cm:property name="compositeExons" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/composite_exons.bed" />
-      <cm:property name="bed" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/unc_hg19.bed" />
-      <cm:property name="junctions" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/splice_junctions.txt" />
-      <cm:property name="bowtieIndexDirectory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
-      <cm:property name="chromosomeDirectory" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/Genomes/hg19_M_rCRS/chromosomes" />
-      <cm:property name="order" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref.transcripts.fa" />
-      <cm:property name="referenceSequencePrefix" value="$RNASEQ_MAPSPLICE_RSEM_DIRECTORY/rsem_ref/hg19_M_rCRS_ref" />
+      <cm:property name="compositeExons" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/composite_exons.bed" />
+      <cm:property name="bed" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/unc_hg19.bed" />
+      <cm:property name="junctions" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/splice_junctions.txt" />
+      <cm:property name="bowtieIndexDirectory" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/Genomes/hg19_M_rCRS/ebwt/humanchridx_M_rCRS" />
+      <cm:property name="chromosomeDirectory" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/Genomes/hg19_M_rCRS/chromosomes" />
+      <cm:property name="order" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/rsem_ref/hg19_M_rCRS_ref.transcripts.fa" />
+      <cm:property name="referenceSequencePrefix" value="/proj/seq/LBG/tier1data/nextgenseq/seqware-analysis/mapsplice_rsem/rsem_ref/hg19_M_rCRS_ref" />
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -51,7 +51,7 @@
     <property name="maPSeqDAOBean" ref="maPSeqDAOBean" />
     <property name="attributes">
       <map>
-        <entry key="compositeExons" value="${composite-exons}" />
+        <entry key="compositeExons" value="${compositeExons}" />
         <entry key="bed" value="${bed}" />
         <entry key="order" value="${order}" />
         <entry key="referenceSequencePrefix" value="${referenceSequencePrefix}" />
