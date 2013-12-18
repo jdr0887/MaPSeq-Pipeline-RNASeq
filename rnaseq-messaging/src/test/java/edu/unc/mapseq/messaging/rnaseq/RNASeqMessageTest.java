@@ -25,7 +25,7 @@ public class RNASeqMessageTest {
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createQueue("queue/rnaseq");
             MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
             String format = "{\"account_name\":\"rc_lbg.svc\",\"entities\":[{\"entity_type\":\"HTSFSample\",\"guid\":\"%1$d\"},{\"entity_type\":\"WorkflowRun\",\"name\":\"RNASeq-CALGB-%1$d\"}]}";
             // producer.send(session.createTextMessage(String.format(format, 397056L)));
 
