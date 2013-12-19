@@ -958,6 +958,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
             finalAlignmentsHeadedCatJob.addArgument(CatCLI.FILES, sortOutput.getAbsolutePath());
             graph.addVertex(finalAlignmentsHeadedCatJob);
             graph.addEdge(setUnmappedBitFlagJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(readChromoSizesJob, finalAlignmentsHeadedCatJob);
 
             // new job
             CondorJob samtoolsViewJob = WorkflowJobFactory.createJob(++count, SAMToolsViewCLI.class, getWorkflowPlan(),
