@@ -166,7 +166,7 @@ public class RNASeqWorkflow extends AbstractWorkflow {
 
         String siteName = getWorkflowBeanService().getAttributes().get("siteName");
         logger.info("siteName: {}", siteName);
-        
+
         String bowtieIndexDirectory = getWorkflowBeanService().getAttributes().get("bowtieIndexDirectory");
         logger.info("bowtieIndexDirectory: {}", bowtieIndexDirectory);
 
@@ -955,10 +955,16 @@ public class RNASeqWorkflow extends AbstractWorkflow {
                     fusionUnmapped2ReadsToUnmappedSAMOutput.getAbsolutePath());
             finalAlignmentsHeadedCatJob.addArgument(CatCLI.FILES, new File(fusionDir,
                     "_filtered_fusion_alignments.unmapped").getAbsolutePath());
-            finalAlignmentsHeadedCatJob.addArgument(CatCLI.FILES, sortOutput.getAbsolutePath());
+            finalAlignmentsHeadedCatJob.addArgument(CatCLI.FILES, unmappedBitFlag.getAbsolutePath());
             graph.addVertex(finalAlignmentsHeadedCatJob);
             graph.addEdge(setUnmappedBitFlagJob, finalAlignmentsHeadedCatJob);
             graph.addEdge(readChromoSizesJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(filteredNormalAlignmentsPairedCatJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(filteredNormalAlignmentsSingleCatJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(filteredNormalAlignmentsFusionPairedCatJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(fusionUnmapped1ReadsToUnmappedSAMJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(fusionUnmapped2ReadsToUnmappedSAMJob, finalAlignmentsHeadedCatJob);
+            graph.addEdge(alignmentHandlerMultiJob, finalAlignmentsHeadedCatJob);
 
             // new job
             CondorJob samtoolsViewJob = WorkflowJobFactory.createJob(++count, SAMToolsViewCLI.class, getWorkflowPlan(),
