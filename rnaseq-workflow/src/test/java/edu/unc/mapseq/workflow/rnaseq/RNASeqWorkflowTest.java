@@ -294,6 +294,13 @@ public class RNASeqWorkflowTest {
                 ++count), null);
         graph.addVertex(finalAlignmentsHeadedCatJob);
         graph.addEdge(setUnmappedBitFlagJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(readChromoSizesJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(filteredNormalAlignmentsPairedCatJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(filteredNormalAlignmentsSingleCatJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(filteredNormalAlignmentsFusionPairedCatJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(fusionUnmapped1ReadsToUnmappedSAMJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(fusionUnmapped2ReadsToUnmappedSAMJob, finalAlignmentsHeadedCatJob);
+        graph.addEdge(alignmentHandlerMultiJob, finalAlignmentsHeadedCatJob);
 
         // new job
         CondorJob samtoolsViewJob = new CondorJob(
