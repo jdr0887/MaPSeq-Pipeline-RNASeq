@@ -139,6 +139,7 @@
   <modules>
     <module>rnaseq-workflow</module>
     <module>rnaseq-commands</module>
+    <module>rnaseq-main</module>
     <module>rnaseq-executor</module>
     <module>rnaseq-features</module>
     <module>rnaseq-messaging</module>
