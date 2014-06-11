@@ -1,5 +1,7 @@
 package edu.unc.mapseq.rnaseq;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,11 +20,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import edu.unc.mapseq.dao.MaPSeqDAOException;
 import edu.unc.mapseq.dao.model.Account;
@@ -107,38 +109,40 @@ public class RunWorkflow implements Runnable {
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
-            JSONObject parentJSONObject = new JSONObject();
-            parentJSONObject.put("account_name", account.getName());
-            JSONArray entityArray = new JSONArray();
+            StringWriter sw = new StringWriter();
 
-            JSONObject entityType = null;
+            JsonGenerator generator = new JsonFactory().createGenerator(sw);
+
+            generator.writeStartObject();
+            generator.writeStringField("accountName", System.getProperty("user.name"));
+            generator.writeArrayFieldStart("entities");
 
             if (htsfSampleSet != null) {
                 for (HTSFSample sample : htsfSampleSet) {
-                    entityType = new JSONObject();
-                    entityType.put("entity_type", "HTSFSample");
-                    entityType.put("guid", sample.getId());
-                    entityArray.put(entityType);
+                    generator.writeStartObject();
+                    generator.writeStringField("entityType", "HTSFSample");
+                    generator.writeStringField("guid", sample.getId().toString());
+                    generator.writeEndObject();
                 }
             }
 
-            if (sequencerRun != null) {
-                entityType = new JSONObject();
-                entityType.put("entity_type", "SequencerRun");
-                entityType.put("guid", sequencerRun.getId());
-                entityArray.put(entityType);
-            }
+            generator.writeStartObject();
+            generator.writeStringField("entityType", "WorkflowRun");
+            generator.writeStringField("name", workflowRunName);
+            generator.writeEndObject();
 
-            entityType = new JSONObject();
-            entityType.put("entity_type", "WorkflowRun");
-            entityType.put("name", this.workflowRunName);
-            entityArray.put(entityType);
-            parentJSONObject.put("entities", entityArray);
+            generator.writeEndArray();
+            generator.writeEndObject();
 
-            logger.info(parentJSONObject.toString());
-            producer.send(session.createTextMessage(parentJSONObject.toString()));
+            generator.flush();
+            generator.close();
 
-        } catch (JSONException | JMSException e) {
+            sw.flush();
+            sw.close();
+
+            producer.send(session.createTextMessage(sw.toString()));
+
+        } catch (JMSException | IOException e) {
             e.printStackTrace();
         } finally {
             try {
