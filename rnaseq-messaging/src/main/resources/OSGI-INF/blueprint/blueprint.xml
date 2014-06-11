@@ -7,10 +7,14 @@
   <reference id="RNASeqWorkflowBeanService" interface="edu.unc.mapseq.workflow.WorkflowBeanService"
     component-name="RNASeqWorkflowBeanService" />
 
-  <bean id="RNASeqMessagingService" class="edu.unc.mapseq.messaging.rnaseq.RNASeqMessagingService"
+  <bean id="RNASeqMessageListener" class="edu.unc.mapseq.messaging.rnaseq.RNASeqMessageListener">
+    <property name="workflowBeanService" ref="RNASeqWorkflowBeanService" />
+  </bean>
+
+  <bean id="RNASeqMessageService" class="edu.unc.mapseq.messaging.rnaseq.RNASeqMessageService"
     init-method="start" destroy-method="stop" activation="eager">
     <property name="connectionFactory" ref="connectionFactory" />
-    <property name="workflowBeanService" ref="RNASeqWorkflowBeanService" />
+    <property name="messageListener" ref="RNASeqMessageListener" />
     <property name="destinationName" value="queue/rnaseq" />
   </bean>
 
