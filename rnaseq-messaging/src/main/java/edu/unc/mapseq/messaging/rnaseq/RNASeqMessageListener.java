@@ -27,8 +27,8 @@ import edu.unc.mapseq.dao.model.Workflow;
 import edu.unc.mapseq.dao.model.WorkflowPlan;
 import edu.unc.mapseq.dao.model.WorkflowRun;
 import edu.unc.mapseq.dao.model.WorkflowRunStatusType;
-import edu.unc.mapseq.workflow.AbstractMessageListener;
 import edu.unc.mapseq.workflow.WorkflowException;
+import edu.unc.mapseq.workflow.impl.AbstractMessageListener;
 import edu.unc.mapseq.workflow.model.WorkflowEntity;
 import edu.unc.mapseq.workflow.model.WorkflowMessage;
 
