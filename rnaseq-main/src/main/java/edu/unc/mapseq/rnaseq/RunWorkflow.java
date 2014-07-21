@@ -3,6 +3,7 @@ package edu.unc.mapseq.rnaseq;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.jms.Connection;
@@ -59,14 +60,16 @@ public class RunWorkflow implements Runnable {
         logger.info("ENTERING run()");
         Account account = null;
         try {
-            account = daoMgr.getMaPSeqDAOBean().getAccountDAO().findByName(System.getProperty("user.name"));
+            List<Account> accountList = daoMgr.getMaPSeqDAOBean().getAccountDAO()
+                    .findByName(System.getProperty("user.name"));
+            if (accountList == null || (accountList != null && accountList.isEmpty())) {
+                System.err.printf("Account doesn't exist: %s%n", System.getProperty("user.name"));
+                System.err.println("Must register account first");
+                return;
+            }
+            account = accountList.get(0);
         } catch (MaPSeqDAOException e) {
             e.printStackTrace();
-        }
-
-        if (account == null) {
-            System.out.println("Must register account first");
-            return;
         }
 
         if (this.sequencerRunId == null && this.htsfSampleId == null) {
