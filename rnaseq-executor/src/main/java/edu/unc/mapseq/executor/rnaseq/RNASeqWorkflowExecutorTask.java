@@ -7,13 +7,12 @@ import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.unc.mapseq.dao.MaPSeqDAOBean;
 import edu.unc.mapseq.dao.MaPSeqDAOException;
 import edu.unc.mapseq.dao.WorkflowDAO;
-import edu.unc.mapseq.dao.WorkflowPlanDAO;
-import edu.unc.mapseq.dao.WorkflowRunDAO;
+import edu.unc.mapseq.dao.WorkflowRunAttemptDAO;
 import edu.unc.mapseq.dao.model.Workflow;
-import edu.unc.mapseq.dao.model.WorkflowPlan;
-import edu.unc.mapseq.dao.model.WorkflowRun;
+import edu.unc.mapseq.dao.model.WorkflowRunAttempt;
 import edu.unc.mapseq.workflow.WorkflowBeanService;
 import edu.unc.mapseq.workflow.WorkflowExecutor;
 import edu.unc.mapseq.workflow.WorkflowTPE;
@@ -42,9 +41,10 @@ public class RNASeqWorkflowExecutorTask extends TimerTask {
                 threadPoolExecutor.getActiveCount(), threadPoolExecutor.getTaskCount(),
                 threadPoolExecutor.getCompletedTaskCount()));
 
-        WorkflowDAO workflowDAO = this.workflowBeanService.getMaPSeqDAOBean().getWorkflowDAO();
-        WorkflowRunDAO workflowRunDAO = this.workflowBeanService.getMaPSeqDAOBean().getWorkflowRunDAO();
-        WorkflowPlanDAO workflowPlanDAO = this.workflowBeanService.getMaPSeqDAOBean().getWorkflowPlanDAO();
+        MaPSeqDAOBean mapseqDAOBean = this.workflowBeanService.getMaPSeqDAOBean();
+
+        WorkflowDAO workflowDAO = mapseqDAOBean.getWorkflowDAO();
+        WorkflowRunAttemptDAO workflowRunAttemptDAO = mapseqDAOBean.getWorkflowRunAttemptDAO();
 
         try {
             List<Workflow> workflowList = workflowDAO.findByName("RNASeq");
@@ -53,23 +53,24 @@ public class RNASeqWorkflowExecutorTask extends TimerTask {
                 return;
             }
             Workflow workflow = workflowList.get(0);
-            List<WorkflowPlan> workflowPlanList = workflowPlanDAO.findEnqueued(workflow.getId());
 
-            if (workflowPlanList != null && workflowPlanList.size() > 0) {
+            List<WorkflowRunAttempt> attempts = workflowRunAttemptDAO.findEnqueued(workflow.getId());
 
-                logger.info("dequeuing {} WorkflowPlans", workflowPlanList.size());
-                for (WorkflowPlan workflowPlan : workflowPlanList) {
+            if (attempts != null && !attempts.isEmpty()) {
 
-                    RNASeqWorkflow rnaSeqWorkflow = new RNASeqWorkflow();
+                logger.info("dequeuing {} WorkflowRunAttempt", attempts.size());
+                for (WorkflowRunAttempt attempt : attempts) {
 
-                    WorkflowRun workflowRun = workflowPlan.getWorkflowRun();
-                    workflowRun.setVersion(rnaSeqWorkflow.getVersion());
-                    workflowRun.setDequeuedDate(new Date());
-                    workflowRunDAO.save(workflowRun);
+                    RNASeqWorkflow pipeline = new RNASeqWorkflow();
 
-                    rnaSeqWorkflow.setWorkflowBeanService(workflowBeanService);
-                    rnaSeqWorkflow.setWorkflowPlan(workflowPlan);
-                    threadPoolExecutor.submit(new WorkflowExecutor(rnaSeqWorkflow));
+                    attempt.setVersion(pipeline.getVersion());
+                    attempt.setDequeued(new Date());
+
+                    workflowRunAttemptDAO.save(attempt);
+
+                    pipeline.setWorkflowBeanService(workflowBeanService);
+                    pipeline.setWorkflowRunAttempt(attempt);
+                    threadPoolExecutor.submit(new WorkflowExecutor(pipeline));
 
                 }
 
