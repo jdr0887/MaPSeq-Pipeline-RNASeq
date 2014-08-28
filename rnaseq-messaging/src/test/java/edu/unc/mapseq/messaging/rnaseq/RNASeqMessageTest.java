@@ -26,7 +26,7 @@ public class RNASeqMessageTest {
             Destination destination = session.createQueue("queue/rnaseq");
             MessageProducer producer = session.createProducer(destination);
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-            String format = "{\"account_name\":\"rc_lbg.svc\",\"entities\":[{\"entity_type\":\"HTSFSample\",\"guid\":\"%1$d\"},{\"entity_type\":\"WorkflowRun\",\"name\":\"RNASeq-CALGB-%1$d\"}]}";
+            String format = "{\"entities\":[{\"entityType\":\"Sample\",\"id\":\"%1$d\"},{\"entityType\":\"WorkflowRun\",\"name\":\"RNASeq-CALGB-%1$d\"}]}";
             // producer.send(session.createTextMessage(String.format(format, 397056L)));
 
             Integer[] sampleIdentifierArray = new Integer[] { 397057, 397058, 397059, 397060, 397061, 397062, 397063,
