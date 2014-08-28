@@ -96,7 +96,9 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
                 continue;
             }
 
-            File outputDirectory = new File(sample.getOutputDirectory());
+            File outputDirectory = new File(sample.getOutputDirectory(), getName());
+            File tmpDirectory = new File(outputDirectory, "tmp");
+            tmpDirectory.mkdirs();
 
             File tmpDir = new File(outputDirectory, "tmp");
 
@@ -187,7 +189,9 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             logger.debug(sample.toString());
 
             Flowcell flowcell = sample.getFlowcell();
-            File outputDirectory = new File(sample.getOutputDirectory());
+            File outputDirectory = new File(sample.getOutputDirectory(), getName());
+            File tmpDirectory = new File(outputDirectory, "tmp");
+            tmpDirectory.mkdirs();
 
             File tmpDir = new File(outputDirectory, "tmp");
             File originalDir = new File(tmpDir, "original");
