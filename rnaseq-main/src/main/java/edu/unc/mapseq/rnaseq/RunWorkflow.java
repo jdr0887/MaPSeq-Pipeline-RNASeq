@@ -83,7 +83,7 @@ public class RunWorkflow implements Runnable {
                 Sample sample = sampleDAO.findById(this.sampleId);
                 sampleSet.add(sample);
             } catch (MaPSeqDAOException e) {
-                logger.error("Problem finding HTSFSample", e);
+                logger.error("Problem finding Sample", e);
             }
         }
 
@@ -183,7 +183,7 @@ public class RunWorkflow implements Runnable {
 
     @SuppressWarnings("static-access")
     public static void main(String[] args) {
-        cliOptions.addOption(OptionBuilder.withArgName("sampleId").hasArg().withDescription("HTSFSample identifier")
+        cliOptions.addOption(OptionBuilder.withArgName("sampleId").hasArg().withDescription("Sample identifier")
                 .withLongOpt("sampleId").create());
         cliOptions.addOption(OptionBuilder.withArgName("flowcellId").hasArg()
                 .withDescription("SequencerRun identifier").withLongOpt("flowcellId").create());
