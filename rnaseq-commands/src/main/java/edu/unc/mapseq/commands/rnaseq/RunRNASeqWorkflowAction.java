@@ -11,8 +11,8 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.commands.Argument;
+import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.AbstractAction;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -60,7 +60,7 @@ public class RunRNASeqWorkflowAction extends AbstractAction {
             generator.writeArrayFieldStart("entities");
 
             generator.writeStartObject();
-            generator.writeStringField("entityType", "HTSFSample");
+            generator.writeStringField("entityType", "Sample");
             generator.writeStringField("id", sampleId.toString());
             generator.writeEndObject();
 
