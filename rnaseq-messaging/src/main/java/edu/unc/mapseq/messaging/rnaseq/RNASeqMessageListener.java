@@ -81,7 +81,7 @@ public class RNASeqMessageListener extends AbstractMessageListener {
         WorkflowRunDAO workflowRunDAO = daoBean.getWorkflowRunDAO();
         WorkflowRunAttemptDAO workflowRunAttemptDAO = daoBean.getWorkflowRunAttemptDAO();
 
-        Flowcell flowcell = null;
+        Set<Flowcell> flowcellSet = new HashSet<Flowcell>();
         Set<Sample> sampleSet = new HashSet<Sample>();
         WorkflowRun workflowRun = null;
         Workflow workflow = null;
@@ -101,7 +101,8 @@ public class RNASeqMessageListener extends AbstractMessageListener {
             for (WorkflowEntity entity : workflowMessage.getEntities()) {
                 if (StringUtils.isNotEmpty(entity.getEntityType())
                         && Flowcell.class.getSimpleName().equals(entity.getEntityType())) {
-                    flowcell = getFlowcell(entity);
+                    Flowcell flowcell = getFlowcell(entity);
+                    flowcellSet.add(flowcell);
                 }
             }
 
@@ -113,9 +114,9 @@ public class RNASeqMessageListener extends AbstractMessageListener {
                 }
             }
 
-            if (flowcell == null && sampleSet.isEmpty()) {
-                logger.warn("Flowcell & sampleSet are both empty...not running anything");
-                throw new WorkflowException("Flowcell & sampleSet are both empty...not running anything");
+            if (flowcellSet.isEmpty() && sampleSet.isEmpty()) {
+                logger.warn("flowcellSet & sampleSet are both empty...not running anything");
+                throw new WorkflowException("flowcellSet & sampleSet are both empty...not running anything");
             }
 
             for (WorkflowEntity entity : workflowMessage.getEntities()) {
@@ -128,6 +129,14 @@ public class RNASeqMessageListener extends AbstractMessageListener {
             if (workflowRun == null) {
                 logger.warn("WorkflowRun is null...not running anything");
                 throw new WorkflowException("WorkflowRun is null...not running anything");
+            }
+
+            if (!flowcellSet.isEmpty()) {
+                workflowRun.setFlowcells(flowcellSet);
+            }
+
+            if (!sampleSet.isEmpty()) {
+                workflowRun.setSamples(sampleSet);
             }
 
         } catch (WorkflowException e1) {
