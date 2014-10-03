@@ -224,8 +224,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             String fastqLaneRootName = StringUtils.removeEnd(r2FastqRootName, "_R2");
 
             // new job
-            CondorJobBuilder builder = WorkflowJobFactory.createJob(++count, GUnZipCLI.class, attempt).siteName(
-                    siteName);
+            CondorJobBuilder builder = WorkflowJobFactory.createJob(++count, GUnZipCLI.class, attempt.getId(),
+                    sample.getId()).siteName(siteName);
             File gunzippedFastqR1 = new File(outputDirectory, r1FastqRootName + ".fastq");
             builder.addArgument(GUnZipCLI.GZFILE, r1FastqFile.getAbsolutePath()).addArgument(GUnZipCLI.EXTRACTFILE,
                     gunzippedFastqR1.getAbsolutePath());
@@ -234,7 +234,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addVertex(gunzipFastqR1Job);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, UBUFastqFormatterCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory
+                    .createJob(++count, UBUFastqFormatterCLI.class, attempt.getId(), sample.getId()).siteName(siteName);
             File fastqFormatterR1Out = new File(outputDirectory, gunzippedFastqR1.getName().replace(".fastq",
                     ".filtered.fastq"));
             builder.addArgument(UBUFastqFormatterCLI.INPUT, gunzippedFastqR1.getAbsolutePath())
@@ -246,7 +247,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(gunzipFastqR1Job, fastqFormatterR1Job);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, GUnZipCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, GUnZipCLI.class, attempt.getId(), sample.getId()).siteName(
+                    siteName);
             File gunzippedFastqR2 = new File(outputDirectory, r2FastqRootName + ".fastq");
             builder.addArgument(GUnZipCLI.GZFILE, r2FastqFile.getAbsolutePath()).addArgument(GUnZipCLI.EXTRACTFILE,
                     gunzippedFastqR2.getAbsolutePath());
@@ -255,7 +257,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addVertex(gunzipFastqR2Job);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, UBUFastqFormatterCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory
+                    .createJob(++count, UBUFastqFormatterCLI.class, attempt.getId(), sample.getId()).siteName(siteName);
             File fastqFormatterR2Out = new File(outputDirectory, gunzippedFastqR2.getName().replace(".fastq",
                     ".filtered.fastq"));
             builder.addArgument(UBUFastqFormatterCLI.INPUT, gunzippedFastqR2.getAbsolutePath())
@@ -267,7 +270,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(gunzipFastqR2Job, fastqFormatterR2Job);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, DetermineReadLengthCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, DetermineReadLengthCLI.class, attempt.getId(),
+                    sample.getId()).siteName(siteName);
             File determineReadLengthOutput = new File(tmpDir, "readLengthProps.xml");
             builder.addArgument(DetermineReadLengthCLI.INPUT, fastqFormatterR1Out.getAbsolutePath())
                     .addArgument(DetermineReadLengthCLI.INPUT, fastqFormatterR2Out.getAbsolutePath())
@@ -279,7 +283,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(fastqFormatterR2Job, determineReadLengthJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, ReadChromoSizeCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, ReadChromoSizeCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File chromosomeHeadOutput = new File(tmpDir, "chrom_head");
             File chromosomeIndexOutput = new File(tmpDir, "chromo.fai");
             File chromosomeNamesOutput = new File(fusionDir, "chrName.txt");
@@ -299,8 +304,9 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addVertex(readChromoSizesJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, MapSpliceMultiThreadCLI.class, attempt).siteName(siteName)
-                    .numberOfProcessors(8);
+            builder = WorkflowJobFactory
+                    .createJob(++count, MapSpliceMultiThreadCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName).numberOfProcessors(8);
             File mapspliceMultiThreadJobOutput = new File(originalDir, "bowtie.output");
             File originalSAMMapspliceMultiThreadOutput = new File(originalDir, "original.sam");
             builder.addArgument(MapSpliceMultiThreadCLI.FASTQ1, fastqFormatterR1Out.getAbsolutePath())
@@ -333,7 +339,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(fastqFormatterR2Job, originalSAMMapspliceMultiThreadJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt.getId()).siteName(siteName);
             builder.addArgument(RegexCatCLI.DIRECTORY, originalDir.getAbsolutePath())
                     .addArgument(RegexCatCLI.OUTPUT, originalSAMMapspliceMultiThreadOutput.getAbsolutePath())
                     .addArgument(RegexCatCLI.REGEX, "^.*\\.sam\\.[0-9]");
@@ -343,7 +349,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(originalSAMMapspliceMultiThreadJob, originalSAMRegexCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, NewSAM2JuntionCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, NewSAM2JuntionCLI.class, attempt.getId())
+                    .siteName(siteName);
             File originalAllJunctionsFile = new File(originalDir, "ori.all_junctions.txt");
             builder.addArgument(NewSAM2JuntionCLI.CHROMOSOMEFILESDIRECTORY, chromosomeDirectory)
                     .addArgument(NewSAM2JuntionCLI.INPUT, originalSAMMapspliceMultiThreadOutput.getAbsolutePath())
@@ -358,7 +365,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(originalSAMRegexCatJob, sam2JunctionArrayJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, Filter1HitsCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, Filter1HitsCLI.class, attempt.getId()).siteName(siteName);
             File canonicalFilter1HitsOutput = new File(bestDir,
                     "ori.all_junctions.filtered_by_min_mis_lpq.remained.txt");
             File nonCanonicalFilter1HitsOutput = new File(bestDir,
@@ -374,8 +381,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(sam2JunctionArrayJob, filter1HitsJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, FilterJunctionByROCarguNonCanonicalCLI.class, attempt,
-                    false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, FilterJunctionByROCarguNonCanonicalCLI.class,
+                    attempt.getId()).siteName(siteName);
             File bestJunctionOutput = new File(bestDir, "best_junction.txt");
             File nonCanonicalBestJunctionOutput = new File(bestDir,
                     "best_junction_semi_non_canon_filtered_by_ROCargu.txt");
@@ -398,7 +405,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(filter1HitsJob, filterJunctionByROCarguNonCanonicalJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, JunctionSequenceConstructionCLI.class, attempt, false)
+            builder = WorkflowJobFactory.createJob(++count, JunctionSequenceConstructionCLI.class, attempt.getId())
                     .siteName(siteName);
             File junctionSequenceConstructionOutput = new File(remapDir, "synthetic_alljunc_sequence.txt");
             builder.addArgument(JunctionSequenceConstructionCLI.JUNCTION, bestJunctionOutput.getAbsolutePath())
@@ -413,7 +420,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addVertex(junctionSequenceConstructionJob);
             graph.addEdge(filterJunctionByROCarguNonCanonicalJob, junctionSequenceConstructionJob);
 
-            builder = WorkflowJobFactory.createJob(++count, BowtieBuildCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, BowtieBuildCLI.class, attempt.getId()).siteName(siteName);
             File synIndexPrefix = new File(remapDir, "syn_idx_prefix");
             builder.addArgument(BowtieBuildCLI.INPUT, junctionSequenceConstructionOutput.getAbsolutePath())
                     .addArgument(BowtieBuildCLI.PREFIX, synIndexPrefix.getAbsolutePath());
@@ -423,8 +430,9 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(junctionSequenceConstructionJob, bowtieBuildJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, MapSpliceMultiThreadCLI.class, attempt).siteName(siteName)
-                    .numberOfProcessors(8);
+            builder = WorkflowJobFactory
+                    .createJob(++count, MapSpliceMultiThreadCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName).numberOfProcessors(8);
             File unmappedOutput = new File(remapDir, "remap_unmapped");
             mapspliceMultiThreadJobOutput = new File(remapDir, "bowtie.output");
             File remappedSAMMapspliceMultiThreadOutput = new File(remapDir, "remapped.sam");
@@ -459,7 +467,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(bowtieBuildJob, remappedSAMMapspliceMultiThreadJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt.getId()).siteName(siteName);
             builder.addArgument(RegexCatCLI.DIRECTORY, remapDir.getAbsolutePath())
                     .addArgument(RegexCatCLI.OUTPUT, remappedSAMMapspliceMultiThreadOutput.getAbsolutePath())
                     .addArgument(RegexCatCLI.REGEX, "^remapped\\.sam\\.[0-9]");
@@ -469,7 +477,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(remappedSAMMapspliceMultiThreadJob, remappedRegexCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt.getId()).siteName(siteName);
             File remapUnmapped1RegexCatOutput = new File(remapDir, "remap_unmapped.1");
             builder.addArgument(RegexCatCLI.DIRECTORY, remapDir.getAbsolutePath())
                     .addArgument(RegexCatCLI.OUTPUT, remapUnmapped1RegexCatOutput.getAbsolutePath())
@@ -480,7 +488,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(remappedSAMMapspliceMultiThreadJob, remapUnmapped1RegexCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt.getId()).siteName(siteName);
             File remapUnmapped2RegexCatOutput = new File(remapDir, "remap_unmapped.2");
             builder.addArgument(RegexCatCLI.DIRECTORY, remapDir.getAbsolutePath())
                     .addArgument(RegexCatCLI.OUTPUT, remapUnmapped2RegexCatOutput.getAbsolutePath())
@@ -491,7 +499,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(remappedSAMMapspliceMultiThreadJob, remapUnmapped2RegexCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, AlignmentHandlerMultiCLI.class, attempt, false)
+            builder = WorkflowJobFactory.createJob(++count, AlignmentHandlerMultiCLI.class, attempt.getId())
                     .siteName(siteName).numberOfProcessors(8);
             File filteredAlignmentBase = new File(remapDir, "_filtered_normal_alignments");
             builder.addArgument(AlignmentHandlerMultiCLI.ADDSOFTCLIP, 1)
@@ -530,7 +538,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(remappedRegexCatJob, alignmentHandlerMultiJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt.getId()).siteName(siteName);
             File fusionPaired = new File(remapDir, remappedSAMMapspliceMultiThreadOutput.getName()
                     + "_filtered_normal_alignments.fusion_paired");
             File bothUnsplicedFusionPairedAlignments = new File(remapDir,
@@ -547,7 +555,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(alignmentHandlerMultiJob, filteredNormalAlignmentsFusionPairedCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt.getId()).siteName(siteName);
             File single = new File(remapDir, remappedSAMMapspliceMultiThreadOutput.getName()
                     + "_filtered_normal_alignments.single");
             File bothUnsplicedSingleAlignments = new File(remapDir, remappedSAMMapspliceMultiThreadOutput.getName()
@@ -563,7 +571,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(alignmentHandlerMultiJob, filteredNormalAlignmentsSingleCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt.getId()).siteName(siteName);
             File paired = new File(remapDir, remappedSAMMapspliceMultiThreadOutput.getName()
                     + "_filtered_normal_alignments.paired");
             File bothUnsplicedPairedAlignments = new File(remapDir, remappedSAMMapspliceMultiThreadOutput.getName()
@@ -579,7 +587,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(alignmentHandlerMultiJob, filteredNormalAlignmentsPairedCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SedCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SedCLI.class, attempt.getId()).siteName(siteName);
             File fusionSAM = new File(fusionDir, "sed.fusion.sam");
             builder.addArgument(SedCLI.SOURCE, fusionPairedAlignments.getAbsolutePath())
                     .addArgument(SedCLI.REGULAREXPRESSION, "s/^/1~/")
@@ -590,7 +598,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(filteredNormalAlignmentsFusionPairedCatJob, sedJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, ParseClusterCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, ParseClusterCLI.class, attempt.getId()).siteName(siteName);
             builder.addArgument(ParseClusterCLI.INPUT, fusionSAM.getAbsolutePath()).addArgument(
                     ParseClusterCLI.OUTPUTDIRECTORY, clusterDir.getAbsolutePath());
             CondorJob parseClusterJob = builder.build();
@@ -599,7 +607,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(sedJob, parseClusterJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, ClusterCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, ClusterCLI.class, attempt.getId()).siteName(siteName);
             builder.addArgument(ClusterCLI.CLUSTERDIRECTORY, clusterDir.getAbsolutePath());
             CondorJob clusterJob = builder.build();
             logger.info(clusterJob.toString());
@@ -607,8 +615,9 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(parseClusterJob, clusterJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, MapSpliceMultiThreadCLI.class, attempt).siteName(siteName)
-                    .numberOfProcessors(8);
+            builder = WorkflowJobFactory
+                    .createJob(++count, MapSpliceMultiThreadCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName).numberOfProcessors(8);
             File normalSAMMapspliceMultiThreadFusionOutput = new File(fusionDir, "normal.sam");
             unmappedOutput = new File(fusionDir, "fusion_original_unmapped");
             mapspliceMultiThreadJobOutput = new File(fusionDir, "bowtie_original.output");
@@ -649,8 +658,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(remapUnmapped2RegexCatJob, mapspliceMultiThreadFusionJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, FusionSAM2JunctionFilterAnchorNewFormatCLI.class, attempt)
-                    .siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, FusionSAM2JunctionFilterAnchorNewFormatCLI.class,
+                    attempt.getId(), sample.getId()).siteName(siteName);
             File fusionSAM2JunctionFilterAnchorNewFormatOutput = new File(fusionDir, "original_fusion_junction.txt");
             builder.addArgument(FusionSAM2JunctionFilterAnchorNewFormatCLI.JUNCTION,
                     fusionSAM2JunctionFilterAnchorNewFormatOutput.getAbsolutePath())
@@ -666,7 +675,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(mapspliceMultiThreadFusionJob, fusionSAM2JunctionFilterAnchorNewFormatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, FilterOriginalFusionCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, FilterOriginalFusionCLI.class, attempt.getId(),
+                    sample.getId()).siteName(siteName);
             File filteredJunctions = new File(fusionDir, "original_fusion_junction.filtered.txt");
             File remainingJunctions = new File(fusionDir, "original_fusion_junction.remained.txt");
             builder.addArgument(FilterOriginalFusionCLI.JUNCTION,
@@ -681,7 +691,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(fusionSAM2JunctionFilterAnchorNewFormatJob, filterOriginalFusionJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, JunctionDBFusionCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, JunctionDBFusionCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File junctionDBFusionOutput = new File(fusionDir, "fusion_synthetic_sequence.txt");
             builder.addArgument(JunctionDBFusionCLI.FUSIONJUNCTION, remainingJunctions.getAbsolutePath())
                     .addArgument(JunctionDBFusionCLI.JUNCTION, bestJunctionOutput.getAbsolutePath())
@@ -697,7 +708,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(filterOriginalFusionJob, junctionDBFusionJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, BowtieBuildCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, BowtieBuildCLI.class, attempt.getId()).siteName(siteName);
             File synFusionIndexPrefix = new File(fusionDir, "syn_fusion_idx_prefix");
             builder.addArgument(BowtieBuildCLI.INPUT, junctionDBFusionOutput.getAbsolutePath()).addArgument(
                     BowtieBuildCLI.PREFIX, synFusionIndexPrefix.getAbsolutePath());
@@ -707,8 +718,9 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(junctionDBFusionJob, synFusionIndexBowtieBuildJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, MapSpliceMultiThreadCLI.class, attempt).siteName(siteName)
-                    .numberOfProcessors(8);
+            builder = WorkflowJobFactory
+                    .createJob(++count, MapSpliceMultiThreadCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName).numberOfProcessors(8);
             normalSAMMapspliceMultiThreadFusionOutput = new File(fusionDir, "normal.sam");
             unmappedOutput = new File(fusionDir, "fusion_unmapped");
             mapspliceMultiThreadJobOutput = new File(fusionDir, "bowtie.output");
@@ -747,7 +759,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(synFusionIndexBowtieBuildJob, mapspliceMultiThreadFusionJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SortCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SortCLI.class, attempt.getId()).siteName(siteName);
             File sortOutput = new File(fusionDir, "combined_fusion_normal.sam");
             builder.addArgument(SortCLI.OUTPUT, sortOutput.getAbsolutePath()).addArgument(SortCLI.BUFFERSIZE, 3500000)
                     .addArgument(SortCLI.KEY, "1,1").addArgument(SortCLI.TMPDIRECTORY, tmpDir.getAbsolutePath())
@@ -760,7 +772,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(mapspliceMultiThreadFusionJob, sortJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt.getId()).siteName(siteName);
             File fusionUnmapped1RegexCatOutput = new File(fusionDir, "fusion_unmapped.1");
             builder.addArgument(RegexCatCLI.DIRECTORY, fusionDir.getAbsolutePath())
                     .addArgument(RegexCatCLI.OUTPUT, fusionUnmapped1RegexCatOutput.getAbsolutePath())
@@ -771,7 +783,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(mapspliceMultiThreadFusionJob, fusionUnmapped1RegexCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RegexCatCLI.class, attempt.getId()).siteName(siteName);
             File fusionUnmapped2RegexCatOutput = new File(fusionDir, "fusion_unmapped.2");
             builder.addArgument(RegexCatCLI.DIRECTORY, fusionDir.getAbsolutePath())
                     .addArgument(RegexCatCLI.OUTPUT, fusionUnmapped2RegexCatOutput.getAbsolutePath())
@@ -782,7 +794,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(mapspliceMultiThreadFusionJob, fusionUnmapped2RegexCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, ReadsToUnmappedSAMCLI.class, attempt, false).siteName(
+            builder = WorkflowJobFactory.createJob(++count, ReadsToUnmappedSAMCLI.class, attempt.getId()).siteName(
                     siteName);
             File fusionUnmapped1ReadsToUnmappedSAMOutput = new File(fusionDir, "fusion_unmapped.1.sam");
             builder.addArgument(ReadsToUnmappedSAMCLI.INPUT, fusionUnmapped1RegexCatOutput.getAbsolutePath())
@@ -794,7 +806,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(fusionUnmapped1RegexCatJob, fusionUnmapped1ReadsToUnmappedSAMJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, ReadsToUnmappedSAMCLI.class, attempt, false).siteName(
+            builder = WorkflowJobFactory.createJob(++count, ReadsToUnmappedSAMCLI.class, attempt.getId()).siteName(
                     siteName);
             File fusionUnmapped2ReadsToUnmappedSAMOutput = new File(fusionDir, "fusion_unmapped.2.sam");
             builder.addArgument(ReadsToUnmappedSAMCLI.INPUT, fusionUnmapped2RegexCatOutput.getAbsolutePath())
@@ -806,7 +818,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(fusionUnmapped2RegexCatJob, fusionUnmapped2ReadsToUnmappedSAMJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, AlignmentHandlerMultiCLI.class, attempt, false)
+            builder = WorkflowJobFactory.createJob(++count, AlignmentHandlerMultiCLI.class, attempt.getId())
                     .siteName(siteName).numberOfProcessors(8);
             filteredAlignmentBase = new File(fusionDir, "_filtered_fusion_alignments");
             builder.addArgument(AlignmentHandlerMultiCLI.ADDSOFTCLIP, 1)
@@ -844,7 +856,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(determineReadLengthJob, alignmentHandlerMultiJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SortCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SortCLI.class, attempt.getId()).siteName(siteName);
             sortOutput = new File(tmpDir, "combined_unmapped.sam");
             builder.addArgument(SortCLI.OUTPUT, sortOutput.getAbsolutePath())
                     .addArgument(SortCLI.BUFFERSIZE, 3500000)
@@ -864,7 +876,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(fusionUnmapped2ReadsToUnmappedSAMJob, sortJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SetUnmappedBitFlagCLI.class, attempt, false).siteName(
+            builder = WorkflowJobFactory.createJob(++count, SetUnmappedBitFlagCLI.class, attempt.getId()).siteName(
                     siteName);
             File unmappedBitFlag = new File(tmpDir, "combined_unmapped_setbitflag.sam");
             builder.addArgument(SetUnmappedBitFlagCLI.UNMAPPEDSAM, sortOutput.getAbsolutePath()).addArgument(
@@ -875,7 +887,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(sortJob, setUnmappedBitFlagJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, CatCLI.class, attempt.getId()).siteName(siteName);
             File catOutput = new File(tmpDir, "final_alignments_headed.sam");
             builder.addArgument(CatCLI.OUTPUT, catOutput.getAbsolutePath())
                     .addArgument(CatCLI.FILES, chromosomeHeadOutput.getAbsolutePath())
@@ -902,7 +914,7 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(alignmentHandlerMultiJob, finalAlignmentsHeadedCatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SAMToolsViewCLI.class, attempt, false).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SAMToolsViewCLI.class, attempt.getId()).siteName(siteName);
             File samtoolsViewOutput = new File(outputDirectory, fastqLaneRootName + ".bam");
             builder.addArgument(SAMToolsViewCLI.OUTPUT, samtoolsViewOutput.getAbsolutePath())
                     .addArgument(SAMToolsViewCLI.SAMINPUTFORMAT).addArgument(SAMToolsViewCLI.BAMFORMAT)
@@ -913,8 +925,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(finalAlignmentsHeadedCatJob, samtoolsViewJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, PicardAddOrReplaceReadGroupsCLI.class, attempt).siteName(
-                    siteName);
+            builder = WorkflowJobFactory.createJob(++count, PicardAddOrReplaceReadGroupsCLI.class, attempt.getId(),
+                    sample.getId()).siteName(siteName);
             File fixRGOutput = new File(outputDirectory, samtoolsViewOutput.getName().replace(".bam", ".fixed-rg.bam"));
             builder.addArgument(PicardAddOrReplaceReadGroupsCLI.INPUT, samtoolsViewOutput.getAbsolutePath())
                     .addArgument(PicardAddOrReplaceReadGroupsCLI.OUTPUT, fixRGOutput.getAbsolutePath())
@@ -931,7 +943,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(samtoolsViewJob, picardAddOrReplaceReadGroupsJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SAMToolsSortCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SAMToolsSortCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File samtoolsSortOut = new File(outputDirectory, fixRGOutput.getName().replace(".bam", ".sorted.bam"));
             builder.addArgument(SAMToolsSortCLI.INPUT, fixRGOutput.getAbsolutePath()).addArgument(
                     SAMToolsSortCLI.OUTPUT, samtoolsSortOut.getAbsolutePath());
@@ -941,7 +954,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(picardAddOrReplaceReadGroupsJob, samtoolsSortJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SAMToolsIndexCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SAMToolsIndexCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File samtoolsIndexOutput = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam", ".bai"));
             builder.addArgument(SAMToolsIndexCLI.INPUT, samtoolsSortOut.getAbsolutePath()).addArgument(
                     SAMToolsIndexCLI.OUTPUT, samtoolsIndexOutput.getAbsolutePath());
@@ -951,7 +965,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(samtoolsSortJob, samtoolsIndexJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SAMToolsFlagstatCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SAMToolsFlagstatCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File samtoolsFlagstatOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam", ".flagstat"));
             builder.addArgument(SAMToolsFlagstatCLI.INPUT, samtoolsSortOut.getAbsolutePath()).addArgument(
                     SAMToolsFlagstatCLI.OUTPUT, samtoolsFlagstatOut.getAbsolutePath());
@@ -961,7 +976,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(samtoolsIndexJob, samtoolsFlagstatJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, UBUSamJunctionCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, UBUSamJunctionCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File ubuSamJunctionOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                     ".junction_quantification.txt"));
             builder.addArgument(UBUSamJunctionCLI.JUNCTIONS, junctions)
@@ -973,7 +989,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(samtoolsIndexJob, ubuSamJunctionJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, CoverageBedCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, CoverageBedCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File coverageBedOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                     ".coverageBedOut.txt"));
             builder.addArgument(CoverageBedCLI.INPUT, samtoolsSortOut.getAbsolutePath())
@@ -985,7 +1002,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(samtoolsSortJob, coverageBedJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, NormBedExonQuantCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, NormBedExonQuantCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File normBedExonQuantOut = new File(outputDirectory, coverageBedOut.getName().replace(
                     ".coverageBedOut.txt", ".normBedExonQuantOut.txt"));
             builder.addArgument(NormBedExonQuantCLI.INFILE, coverageBedOut.getAbsolutePath())
@@ -997,8 +1015,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(coverageBedJob, normBedExonQuantJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, SortByReferenceAndNameCLI.class, attempt)
-                    .siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, SortByReferenceAndNameCLI.class, attempt.getId(),
+                    sample.getId()).siteName(siteName);
             File sortBAMByReferenceAndNameOut = new File(outputDirectory, samtoolsSortOut.getName().replace(".bam",
                     ".refAndNameSort.bam"));
             builder.addArgument(SortByReferenceAndNameCLI.INPUT, samtoolsSortOut.getAbsolutePath()).addArgument(
@@ -1009,7 +1027,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(samtoolsIndexJob, sortBAMByReferenceAndNameJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, UBUSamTranslateCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, UBUSamTranslateCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File ubuSamTranslateOut = new File(outputDirectory, sortBAMByReferenceAndNameOut.getName().replace(".bam",
                     ".transcriptomeAlignments.bam"));
             builder.addArgument(UBUSamTranslateCLI.BED, bed)
@@ -1023,7 +1042,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(sortBAMByReferenceAndNameJob, ubuSamTranslateJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, UBUSamFilterCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, UBUSamFilterCLI.class, attempt.getId(), sample.getId())
+                    .siteName(siteName);
             File ubuSamFilterOut = new File(outputDirectory, ubuSamTranslateOut.getName().replace(".bam",
                     ".filtered.bam"));
             builder.addArgument(UBUSamFilterCLI.INPUT, ubuSamTranslateOut.getAbsolutePath())
@@ -1036,7 +1056,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(ubuSamTranslateJob, ubuSamFilterJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RSEMCalculateExpressionCLI.class, attempt)
+            builder = WorkflowJobFactory
+                    .createJob(++count, RSEMCalculateExpressionCLI.class, attempt.getId(), sample.getId())
                     .siteName(siteName).numberOfProcessors(4);
             File outputPrefix = new File(outputDirectory, "rsem");
             builder.addArgument(RSEMCalculateExpressionCLI.PAIREDEND).addArgument(RSEMCalculateExpressionCLI.BAM)
@@ -1051,7 +1072,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(ubuSamFilterJob, rsemJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, StripTrailingTabsCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory
+                    .createJob(++count, StripTrailingTabsCLI.class, attempt.getId(), sample.getId()).siteName(siteName);
             File isoformResults = new File(outputDirectory, outputPrefix.getName() + ".isoforms.results");
             File isoformResultsStripped = new File(outputDirectory, outputPrefix.getName()
                     + ".isoforms.stripped.results");
@@ -1065,8 +1087,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(rsemJob, rsemISOFormsResultStripTabJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, PruneISOFormsFromGeneQuantFileCLI.class, attempt).siteName(
-                    siteName);
+            builder = WorkflowJobFactory.createJob(++count, PruneISOFormsFromGeneQuantFileCLI.class, attempt.getId(),
+                    sample.getId()).siteName(siteName);
             File geneResultsFile = new File(outputDirectory, outputPrefix.getName() + ".genes.results");
             File origGeneResultsFile = new File(outputDirectory, "orig." + outputPrefix.getName() + ".genes.results");
             builder.addArgument(PruneISOFormsFromGeneQuantFileCLI.GENERESULTS, geneResultsFile.getAbsolutePath())
@@ -1078,7 +1100,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(rsemISOFormsResultStripTabJob, pruneISOFormsFromGeneQuantFileJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, NormalizeQuartileCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory
+                    .createJob(++count, NormalizeQuartileCLI.class, attempt.getId(), sample.getId()).siteName(siteName);
             File normalizeGeneQuantOut = new File(outputDirectory, outputPrefix.getName() + ".genes.normalized_results");
             builder.addArgument(NormalizeQuartileCLI.COLUMN, "2").addArgument(NormalizeQuartileCLI.QUANTILE, "75")
                     .addArgument(NormalizeQuartileCLI.TARGET, "1000")
@@ -1090,7 +1113,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(pruneISOFormsFromGeneQuantFileJob, normalizeGeneQuantJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, NormalizeQuartileCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory
+                    .createJob(++count, NormalizeQuartileCLI.class, attempt.getId(), sample.getId()).siteName(siteName);
             File normalizeISOFormQuantOut = new File(outputDirectory, outputPrefix.getName()
                     + ".isoforms.normalized_results");
             builder.addArgument(NormalizeQuartileCLI.COLUMN, "2").addArgument(NormalizeQuartileCLI.QUANTILE, "75")
@@ -1103,7 +1127,8 @@ public class RNASeqWorkflow extends AbstractSampleWorkflow {
             graph.addEdge(pruneISOFormsFromGeneQuantFileJob, normalizeISOFormQuantJob);
 
             // new job
-            builder = WorkflowJobFactory.createJob(++count, RemoveCLI.class, attempt).siteName(siteName);
+            builder = WorkflowJobFactory.createJob(++count, RemoveCLI.class, attempt.getId(), sample.getId()).siteName(
+                    siteName);
             builder.addArgument(RemoveCLI.FILE, gunzippedFastqR1.getAbsolutePath())
                     .addArgument(RemoveCLI.FILE, gunzippedFastqR2.getAbsolutePath())
                     .addArgument(RemoveCLI.FILE, tmpDir.getAbsolutePath())
