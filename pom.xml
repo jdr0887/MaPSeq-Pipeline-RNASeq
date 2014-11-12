@@ -12,8 +12,8 @@
   <version>0.3.40-SNAPSHOT</version>
   <packaging>pom</packaging>
   <issueManagement>
-    <system>gForge</system>
-    <url>https://code.renci.org/gf/project/mps_r_pl/tracker/</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/jdr0887/MaPSeq-Pipeline-RNASeq/issues</url>
   </issueManagement>
   <licenses>    
     <license>
@@ -23,9 +23,9 @@
     </license>
   </licenses>
   <scm>
-    <developerConnection>scm:git:ssh://${user.name}@code.renci.org/gitroot/mps_r_pl</developerConnection>
-    <connection>scm:git:ssh://developername@code.renci.org/gitroot/mps_r_pl</connection>
-    <tag>HEAD</tag>
+    <url>https://github.com/jdr0887/MaPSeq-Pipeline-RNASeq</url>
+    <developerConnection>scm:git:git@github.com:jdr0887/MaPSeq-Pipeline-RNASeq.git</developerConnection>
+    <connection>scm:git:git@github.com:jdr0887/MaPSeq-Pipeline-RNASeq.git</connection>
   </scm>
   <dependencyManagement>
     <dependencies>
