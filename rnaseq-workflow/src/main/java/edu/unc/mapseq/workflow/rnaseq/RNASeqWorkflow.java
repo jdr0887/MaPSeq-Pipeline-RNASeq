@@ -59,9 +59,9 @@ import edu.unc.mapseq.module.ubu.UBUSamFilterCLI;
 import edu.unc.mapseq.module.ubu.UBUSamJunctionCLI;
 import edu.unc.mapseq.module.ubu.UBUSamTranslateCLI;
 import edu.unc.mapseq.workflow.WorkflowException;
-import edu.unc.mapseq.workflow.WorkflowUtil;
 import edu.unc.mapseq.workflow.impl.AbstractSampleWorkflow;
 import edu.unc.mapseq.workflow.impl.WorkflowJobFactory;
+import edu.unc.mapseq.workflow.impl.WorkflowUtil;
 
 public class RNASeqWorkflow extends AbstractSampleWorkflow {
 
