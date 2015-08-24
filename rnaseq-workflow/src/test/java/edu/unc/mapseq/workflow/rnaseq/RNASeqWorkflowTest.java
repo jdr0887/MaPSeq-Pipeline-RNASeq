@@ -411,7 +411,7 @@ public class RNASeqWorkflowTest {
 
         CondorDOTExporter<CondorJob, CondorJobEdge> dotExporter = new CondorDOTExporter<CondorJob, CondorJobEdge>(
                 vnpId, vnpLabel, null, null, null, null);
-        File srcSiteResourcesImagesDir = new File("src/site/resources/images");
+        File srcSiteResourcesImagesDir = new File("../src/site/resources/images");
         if (!srcSiteResourcesImagesDir.exists()) {
             srcSiteResourcesImagesDir.mkdirs();
         }
