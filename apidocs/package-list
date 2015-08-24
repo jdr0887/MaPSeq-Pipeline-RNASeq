@@ -1,0 +1,5 @@
+edu.unc.mapseq.commands.rnaseq
+edu.unc.mapseq.executor.rnaseq
+edu.unc.mapseq.messaging.rnaseq
+edu.unc.mapseq.rnaseq
+edu.unc.mapseq.workflow.rnaseq
